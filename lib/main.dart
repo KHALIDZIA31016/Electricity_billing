@@ -16,6 +16,5 @@ class EBillingApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: AppRoutes.splashScreen,
       getPages: AppRoutes.routes,
-    );
-  }
+    );}
 }

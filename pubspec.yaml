@@ -19,14 +19,17 @@ dependencies:
   get: ^4.7.2
   carousel_slider: ^5.0.0
 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^5.0.0
   build_runner: ^2.4.15
-  freezed: ^3.0.6
-  json_serializable: ^6.9.4
+  flutter_gen_runner: ^5.7.0
+
+flutter_gen:
+  output: lib/gen/
 
 
 flutter:
@@ -66,3 +69,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+scripts:
+  gen: flutter pub run build_runner build --delete-conflicting-outputs
+
+  # flutter pub run build_runner watch
