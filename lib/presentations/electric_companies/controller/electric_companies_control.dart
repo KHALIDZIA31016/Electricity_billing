@@ -6,7 +6,7 @@ import '../../../data/models/electric_company_model.dart';
 
 class ElectricCompanyController extends GetxController {
   final List<ElectricCompanyModel> companies = [
-    ElectricCompanyModel(name: 'PESCO', image: AppImages.iesco, route: '/pesco'),
+    // ElectricCompanyModel(name: 'PESCO', image: AppImages.iesco, route: '/pesco'),
 
   ];
 }
