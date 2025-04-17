@@ -2,12 +2,10 @@
 
 import 'package:electricity_app/bindings/home_bindings.dart';
 import 'package:electricity_app/bindings/splash_bindings.dart';
-import 'package:electricity_app/presentations/electric_companies/view/electricCompanies_view.dart';
+import 'package:electricity_app/presentations/electric_companies/view/electric_companies_screen.dart';
 import 'package:electricity_app/presentations/home_screen/view/home_view.dart';
 import 'package:electricity_app/presentations/splash_screen/view/splash_view.dart';
 import 'package:get/get.dart';
-
-import '../../presentations/pesco/pesco.dart';
 
 
 class AppRoutes {
@@ -42,12 +40,7 @@ class AppRoutes {
         page: () => ElectricCompaniesScreen(),
     ),
 
-    GetPage(name: pesco, page: () => PescoScreen()),
-    GetPage(name: lesco, page: () => PescoScreen()),
-    GetPage(name: fesco, page: () => PescoScreen()),
-    GetPage(name: kelectric, page: () => PescoScreen()),
-    GetPage(name: mepco, page: () => PescoScreen()),
-    GetPage(name: qesco, page: () => PescoScreen()),
+
 
 
 

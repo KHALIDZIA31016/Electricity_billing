@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class CustomAppBar extends StatelessWidget {
   const CustomAppBar({
@@ -26,7 +27,9 @@ class CustomAppBar extends StatelessWidget {
       child: AppBar(
         centerTitle: true,
         backgroundColor: Colors.transparent, // Make AppBar transparent to show the border
-        leading: Icon(Icons.delivery_dining_sharp, color: Colors.black),
+        leading: IconButton(onPressed: (){
+          Get.back();
+        } ,icon: Icon(Icons.arrow_circle_left, color: Colors.black38,),),
         title: Text(
           title,
           style: TextStyle(

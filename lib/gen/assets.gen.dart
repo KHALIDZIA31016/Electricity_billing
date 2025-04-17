@@ -1,23 +1,44 @@
-/// GENERATED CODE - DO NOT MODIFY BY HAND
-/// *****************************************************
-///  FlutterGen
-/// *****************************************************
-
-// coverage:ignore-file
-// ignore_for_file: type=lint
-// ignore_for_file: directives_ordering,unnecessary_import,implicit_dynamic_list_literal,deprecated_member_use
-
 import 'package:flutter/widgets.dart';
 
 class Assets {
   const Assets._();
 
+  static const AssetGenImage electricity = AssetGenImage(
+    'assets/electricity.jpg',
+  );
+  static const AssetGenImage fesco = AssetGenImage('assets/fesco.png');
+  static const AssetGenImage gepco = AssetGenImage('assets/gepco.png');
+  static const AssetGenImage hesco = AssetGenImage('assets/hesco.png');
+  static const AssetGenImage highVolt = AssetGenImage('assets/high_volt.png');
+  static const AssetGenImage iesco = AssetGenImage('assets/iesco.png');
+  static const AssetGenImage kelectric = AssetGenImage('assets/kelectric.png');
+  static const AssetGenImage lesco = AssetGenImage('assets/lesco.png');
+  static const AssetGenImage mepco = AssetGenImage('assets/mepco.png');
+  static const AssetGenImage pesco = AssetGenImage('assets/pesco.png');
+  static const AssetGenImage qesco = AssetGenImage('assets/qesco.png');
+  static const AssetGenImage sepco = AssetGenImage('assets/sepco.png');
+  static const AssetGenImage teco = AssetGenImage('assets/teco.png');
   static const AssetGenImage welcomeBack = AssetGenImage(
     'assets/welcome-back.png',
   );
 
   /// List of all assets
-  static List<AssetGenImage> get values => [welcomeBack];
+  static List<AssetGenImage> get values => [
+    electricity,
+    fesco,
+    gepco,
+    hesco,
+    highVolt,
+    iesco,
+    kelectric,
+    lesco,
+    mepco,
+    pesco,
+    qesco,
+    sepco,
+    teco,
+    welcomeBack,
+  ];
 }
 
 class AssetGenImage {
