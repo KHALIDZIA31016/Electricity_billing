@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/app_constant/app_images.dart';
+import '../../../gen/assets.gen.dart';
 import '../controller/splash_control.dart';
 
 class SplashScreen extends GetView<SplashController> {
@@ -13,6 +14,7 @@ class SplashScreen extends GetView<SplashController> {
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 100,
           children: [
             Text(
               'Check your electricity Bills',
@@ -20,11 +22,12 @@ class SplashScreen extends GetView<SplashController> {
             ),
             Center(
               child: Container(
-                height: 480,
-                width: 400,
+                height: 200,
+                width: 200,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage(AppImages.bg),
+                    image: AssetImage(Assets.iesco.path),
+                    fit: BoxFit.fill
                   ),
                 ),
               ),

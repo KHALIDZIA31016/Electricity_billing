@@ -1,4 +1,3 @@
-import 'package:electricity_app/presentations/splash_screen/view/splash_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'core/routes/app_routes.dart';
