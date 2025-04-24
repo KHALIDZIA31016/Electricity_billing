@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../themes/app_color.dart';
+
 class NeumorphicButton extends StatelessWidget {
   final String text;
   final String imagePath;
@@ -20,18 +22,18 @@ class NeumorphicButton extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         decoration: BoxDecoration(
           color: Color(0xFFE0E0E0),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(10),
           boxShadow: [
+            // BoxShadow(
+            //   color: Colors.grey.shade500,
+            //   offset: Offset(6, 6),
+            //   blurRadius: 15,
+            //   spreadRadius: 1,
+            // ),
             BoxShadow(
-              color: Colors.grey.shade500,
-              offset: Offset(6, 6),
-              blurRadius: 15,
-              spreadRadius: 1,
-            ),
-            BoxShadow(
-              color: Colors.white,
+              color:AppColors.kWhiteFA.withOpacity(0.2),
               offset: Offset(-6, -6),
-              blurRadius: 15,
+              blurRadius: 0.5,
               spreadRadius: 1,
             ),
           ],

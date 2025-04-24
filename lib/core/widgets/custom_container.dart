@@ -46,6 +46,7 @@ class CustomContainer extends StatelessWidget {
         padding: padding,
         margin: margin,
         decoration: BoxDecoration(
+
           borderRadius: borderRadius,
           color: bgColor,
           image: decorationImage,

@@ -1,6 +1,7 @@
 import 'package:electricity_app/extensions/size_box.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../core/themes/app_color.dart';
 import '../../../core/widgets/custom_appBar.dart';
 import '../../../core/widgets/custom_container.dart';
 import '../../../core/widgets/text_widget.dart';
@@ -8,19 +9,23 @@ import '../controller/billCheck_screen.control.dart';
 
 
 class BillCheckScreen extends StatelessWidget {
-  BillCheckScreen({Key? key}) : super(key: key);
+  final String billType;
+  BillCheckScreen({Key? key, required this.billType}) : super(key: key);
 
   final controller = Get.put(BillCheckController());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.kWhite,
       appBar: PreferredSize(
-        preferredSize: const Size(0, 60),
+        preferredSize: const Size(0, 70),
         child: CustomAppBar(
-          title: 'Check Bill Online',
-          bgColor: Colors.deepOrange.shade300,
-          borderColor: Colors.grey,
+          title: '$billType Bill',
+          leading: IconButton(onPressed: (){
+            Get.back();
+          } ,icon: Icon(Icons.arrow_back_ios, color: AppColors.kWhite, size: 22,),),
+
         ),
       ),
       body: Column(
@@ -30,13 +35,13 @@ class BillCheckScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             height: 240,
             width: double.infinity,
-            bgColor: Colors.white,
+            bgColor: AppColors.kOffWhiteGrey,
             border: Border.all(color: Colors.deepPurple.shade100),
             child: Column(
               children: [
                 TextFormField(
                   decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.delivery_dining_sharp),
+                    prefixIcon: Icon(Icons.circle_outlined, color: AppColors.kOliveGreen),
                     label: regularTextWidget(
                       textTitle: 'Enter your Reference no here',
                       textSize: 16,
@@ -50,7 +55,7 @@ class BillCheckScreen extends StatelessWidget {
                   height: 50,
                   width: 240,
                   borderRadius: BorderRadius.circular(16),
-                  bgColor: Colors.blueGrey,
+                  bgColor: AppColors.kDarkGreen1,
                   child: Center(
                     child: regularTextWidget(
                       textTitle: 'Get Duplicate bill',
@@ -80,7 +85,7 @@ class BillCheckScreen extends StatelessWidget {
                 height: 50,
                 width: 200,
                 borderRadius: BorderRadius.circular(16),
-                bgColor: Colors.blueGrey,
+                bgColor:AppColors.kDarkGreen1,
                 child: Center(
                   child: regularTextWidget(
                     textTitle: 'Searched History',
@@ -89,14 +94,16 @@ class BillCheckScreen extends StatelessWidget {
                   ),
                 ),
               ),
+              Spacer(),
               Obx(
                     () => Switch(
+                      activeColor: AppColors.kDarkGreen1,
                   value: controller.showHistory.value,
                   onChanged: controller.toggleHistory,
                 ),
               ),
             ],
-          ),
+          ).paddingSymmetric(horizontal: 16),
           20.asHeight,
 
           // History Display Area
@@ -115,7 +122,7 @@ class BillCheckScreen extends StatelessWidget {
                     10.asHeight,
                     ...controller.searchHistory.map(
                           (ref) => ListTile(
-                        leading: const Icon(Icons.history),
+                        leading: const Icon(Icons.history, color: AppColors.kDarkGreen1,),
                         title: Text(ref),
                       ),
                     ),

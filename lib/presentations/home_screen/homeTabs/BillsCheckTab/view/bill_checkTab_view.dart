@@ -10,7 +10,7 @@ class BillsCheckTab extends StatelessWidget {
     return Center(
       child: NeumorphicButton(
         text: "Electricity Bills",
-        imagePath: Assets.highVolt.path, // Replace with your actual image path
+        imagePath: Assets.bill.path, // Replace with your actual image path
         onTap: () {
           Get.to(ElectricCompaniesScreen());
         },

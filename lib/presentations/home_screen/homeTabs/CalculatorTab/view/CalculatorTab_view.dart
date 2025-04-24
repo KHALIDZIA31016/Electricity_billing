@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../../core/widgets/neumorphic_btn.dart';
 import '../../../../../gen/assets.gen.dart';
-import '../../../../electric_companies/view/electric_companies_screen.dart';
+import '../../../../electricity_calculator/view/electricity_calculator_view.dart';
 
 
 
@@ -12,9 +12,9 @@ class CalculatorTab extends StatelessWidget {
     return Center(
       child: NeumorphicButton(
         text: "Electricity Calculator",
-        imagePath: Assets.highVolt.path, // Replace with your actual image path
+        imagePath: Assets.calculator.path, // Replace with your actual image path
         onTap: () {
-          Get.to(ElectricCompaniesScreen());
+          Get.to(ElectricityCalculator());
         },
       ),
     );
