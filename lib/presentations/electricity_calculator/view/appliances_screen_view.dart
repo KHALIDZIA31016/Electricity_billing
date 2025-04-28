@@ -129,7 +129,7 @@ class _AppliancesScreenState extends State<AppliancesScreen> {
                                           child: regularTextWidget(
                                             textTitle: devicesTitle[index]['name'],
                                             textSize: 16,
-                                            textColor: AppColors.kWhite,
+                                            textColor: AppColors.kBlack,
                                           ),
                                         ),
                                       ),
@@ -139,7 +139,7 @@ class _AppliancesScreenState extends State<AppliancesScreen> {
                                       // First Container: Power Input and Dropdown
                                       CustomContainer(
                                         height: 88,
-                                        bgColor: Colors.blue.shade500,
+                                        bgColor: Colors.grey.shade300,
                                         borderRadius: BorderRadius.circular(16),
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,7 +149,7 @@ class _AppliancesScreenState extends State<AppliancesScreen> {
                                               child: regularTextWidget(
                                                 textTitle: 'Enter power',
                                                 textSize: 16,
-                                                textColor: AppColors.kWhite,
+                                                textColor: AppColors.kBlack,
                                               ),
                                             ),
                                             Row(
@@ -158,9 +158,10 @@ class _AppliancesScreenState extends State<AppliancesScreen> {
                                                   child: TextField(
                                                     controller: wattController,
                                                     keyboardType: TextInputType.number,
-                                                    decoration: const InputDecoration(
+                                                    decoration: InputDecoration(
                                                       border: InputBorder.none,
                                                       hintText: 'e.g. 500',
+                                                      hintStyle: TextStyle(color: AppColors.kBlack.withValues(alpha: .2)),
                                                       contentPadding: EdgeInsets.all(12),
                                                     ),
                                                     onChanged: (value) {
@@ -173,10 +174,10 @@ class _AppliancesScreenState extends State<AppliancesScreen> {
                                                 ),
                                                 Text(
                                                   'Watts',
-                                                  style: TextStyle(color: Colors.white, fontSize: 16),
+                                                  style: TextStyle(color: Colors.black, fontSize: 16),
                                                 ),
                                                 IconButton(
-                                                  icon: const Icon(Icons.arrow_drop_down, color: Colors.white, size: 30),
+                                                  icon: const Icon(Icons.arrow_drop_down, color: Colors.black, size: 30),
                                                   onPressed: () async {
                                                     int? selectedValue = await showDialog<int>(
                                                       context: context,
@@ -216,7 +217,7 @@ class _AppliancesScreenState extends State<AppliancesScreen> {
                                       SizedBox(height: 10),
                                       CustomContainer(
                                         height: 56,
-                                        bgColor: Colors.blue.shade500,
+                                        bgColor: Colors.grey.shade300,
                                         borderRadius: BorderRadius.circular(16),
                                         // margin: EdgeInsets.symmetric(vertical: 8),
                                         child: TextField(
@@ -224,6 +225,7 @@ class _AppliancesScreenState extends State<AppliancesScreen> {
                                           decoration: InputDecoration(
                                             border: InputBorder.none,
                                             hintText: 'Enter Quantity',
+                                            hintStyle: TextStyle(color: AppColors.kBlack.withValues(alpha: .2)),
                                             contentPadding: EdgeInsets.all(12),
                                           ),
                                           keyboardType: TextInputType.number,
@@ -238,7 +240,7 @@ class _AppliancesScreenState extends State<AppliancesScreen> {
                                       // Third Container: Daily Usage Input
                                       CustomContainer(
                                         height: 56,
-                                        bgColor: Colors.blue.shade500,
+                                        bgColor: Colors.grey.shade300,
                                         borderRadius: BorderRadius.circular(16),
                                         // margin: EdgeInsets.symmetric(vertical: 8),
                                         child: TextField(
@@ -246,6 +248,7 @@ class _AppliancesScreenState extends State<AppliancesScreen> {
                                           decoration: InputDecoration(
                                             border: InputBorder.none,
                                             hintText: 'Enter Daily Usage (hours)',
+                                            hintStyle: TextStyle(color: AppColors.kBlack.withValues(alpha: .2)),
                                             contentPadding: EdgeInsets.all(12),
                                           ),
                                           keyboardType: TextInputType.number,

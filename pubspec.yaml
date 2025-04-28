@@ -19,6 +19,7 @@ dependencies:
   easy_stepper: ^0.8.5+1
   webview_flutter: ^4.11.0
   shared_preferences: ^2.5.3
+  panara_dialogs: ^0.1.5
 #  enhance_stepper: ^1.0.2
 #  tuple: ^2.0.2
 

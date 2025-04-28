@@ -193,7 +193,7 @@ class _SolarCalculatorScreenState extends State<SolarCalculatorScreen> {
                spacing: 16,
                children: [
                  SizedBox(
-                   width: 150,
+                   width: 170,
                    height: 50,
                    child: ElevatedButton(
                        onPressed: calculateEnergy,

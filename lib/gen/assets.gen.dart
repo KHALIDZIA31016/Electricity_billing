@@ -19,6 +19,7 @@ class Assets {
   static const AssetGenImage airCoolerPng_ = AssetGenImage(
     'assets/air_cooler.png',
   );
+  static const AssetGenImage appIcon = AssetGenImage('assets/appIcon.png');
   static const AssetGenImage battery = AssetGenImage('assets/battery.png');
   static const AssetGenImage bill = AssetGenImage('assets/bill.png');
   static const AssetGenImage calculator = AssetGenImage(
@@ -57,10 +58,15 @@ class Assets {
   static const AssetGenImage mepco = AssetGenImage('assets/mepco.png');
   static const AssetGenImage metering = AssetGenImage('assets/metering.png');
   static const AssetGenImage microwave = AssetGenImage('assets/microwave.png');
+  static const AssetGenImage moreApp = AssetGenImage('assets/more_app.png');
   static const AssetGenImage pesco = AssetGenImage('assets/pesco.png');
   static const AssetGenImage printer = AssetGenImage('assets/printer.png');
+  static const AssetGenImage privayIcon = AssetGenImage(
+    'assets/privay_icon.png',
+  );
   static const AssetGenImage pump = AssetGenImage('assets/pump.png');
   static const AssetGenImage qesco = AssetGenImage('assets/qesco.png');
+  static const AssetGenImage rateIcon = AssetGenImage('assets/rate_icon.png');
   static const AssetGenImage refrigerator = AssetGenImage(
     'assets/refrigerator.png',
   );
@@ -69,6 +75,7 @@ class Assets {
     'assets/solar-energy.png',
   );
   static const AssetGenImage solar = AssetGenImage('assets/solar.png');
+  static const AssetGenImage splash = AssetGenImage('assets/splash.png');
   static const AssetGenImage tableBulb = AssetGenImage('assets/table_bulb.png');
   static const AssetGenImage teco = AssetGenImage('assets/teco.png');
   static const AssetGenImage tv = AssetGenImage('assets/tv.png');
@@ -78,6 +85,7 @@ class Assets {
     ac,
     airCoolerPng,
     airCoolerPng_,
+    appIcon,
     battery,
     bill,
     calculator,
@@ -106,14 +114,18 @@ class Assets {
     mepco,
     metering,
     microwave,
+    moreApp,
     pesco,
     printer,
+    privayIcon,
     pump,
     qesco,
+    rateIcon,
     refrigerator,
     sepco,
     solarEnergy,
     solar,
+    splash,
     tableBulb,
     teco,
     tv,

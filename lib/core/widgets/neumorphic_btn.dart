@@ -24,12 +24,12 @@ class NeumorphicButton extends StatelessWidget {
           color: Color(0xFFE0E0E0),
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
-            // BoxShadow(
-            //   color: Colors.grey.shade500,
-            //   offset: Offset(6, 6),
-            //   blurRadius: 15,
-            //   spreadRadius: 1,
-            // ),
+            BoxShadow(
+              color: Colors.grey.shade500,
+              offset: Offset(0, 0),
+              blurRadius: 7,
+              spreadRadius: 1,
+            ),
             BoxShadow(
               color:AppColors.kWhiteFA.withOpacity(0.2),
               offset: Offset(-6, -6),
@@ -43,9 +43,9 @@ class NeumorphicButton extends StatelessWidget {
           children: [
             Image.asset(
               imagePath,
-              height: 32,
-              width: 32,
-              fit: BoxFit.contain,
+              height: 42,
+              width: 42,
+              fit: BoxFit.cover,
             ),
             SizedBox(width: 12),
             Text(

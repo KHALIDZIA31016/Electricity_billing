@@ -41,7 +41,7 @@ class _BatteryLifeCalculatorState extends State<BatteryLifeCalculator> {
 
   Widget _buildDropdown(String title, String value, List<String> items, Function(String?) onChanged) {
     return CustomContainer(
-      height: 70,
+      height: 74,
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       borderRadius: BorderRadius.circular(16),
@@ -73,9 +73,9 @@ class _BatteryLifeCalculatorState extends State<BatteryLifeCalculator> {
 
   Widget _buildTextField(String title, String hint, String? Function(String?)? validator, Function(String) onChanged) {
     return CustomContainer(
-      height: 70,
+      height: 74,
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
       borderRadius: BorderRadius.circular(16),
       bgColor: Colors.grey.shade400,
       child: Column(
@@ -191,10 +191,10 @@ class _BatteryLifeCalculatorState extends State<BatteryLifeCalculator> {
               }),
               const SizedBox(height: 20),
               CustomContainer(
-                height: 48,
+                height: 54,
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(10),
                 bgColor: Colors.green,
                 child: Center(
                   child: GestureDetector(

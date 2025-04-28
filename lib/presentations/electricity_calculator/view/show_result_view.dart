@@ -1,3 +1,4 @@
+import 'package:electricity_app/extensions/size_box.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -138,10 +139,11 @@ class _ShowResultState extends State<ShowResult> {
 
                       ],
                     ),
+                    10.asHeight,
                     Row(
                       children: [
                         CustomContainer(
-                          height: 40, width: 200,
+                          height: 46, width: 240,
                           bgColor: AppColors.kDarkGreen1,
                           borderRadius: BorderRadius.circular(10),
                           child: Center(
@@ -152,31 +154,41 @@ class _ShowResultState extends State<ShowResult> {
                           ),
                         ),
                         Spacer(),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () {
-                            setState(() {
-                              results.removeAt(index);
-                            });
-                          },
+                        CircleAvatar(
+                          backgroundColor: Colors.grey.shade300,
+                          child: IconButton(
+                            icon:  Icon(Icons.delete, color: Colors.deepOrange.shade400, size: 24,),
+                            onPressed: () {
+                              setState(() {
+                                results.removeAt(index);
+                              });
+                            },
+                          ),
                         ),
                       ],
                     ),
+                    10.asHeight,
                   ],
                 );
               }).toList(),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    results.clear();
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                ),
-                child: const Text(
-                  'Remove All',
-                  style: TextStyle(color: Colors.white),
+              SizedBox(
+                height: 46, width: 240,
+                child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      results.clear();
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.deepOrange.shade300,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)
+                    ),
+                  ),
+                  child: const Text(
+                    'Remove All',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
 

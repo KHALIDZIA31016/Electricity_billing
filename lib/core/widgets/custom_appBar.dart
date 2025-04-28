@@ -32,7 +32,7 @@ class CustomAppBar extends StatelessWidget {
         centerTitle: true,
         backgroundColor: Colors.transparent, // Make AppBar transparent to show the border
         leading: leading,
-        iconTheme: IconThemeData(color: Colors.white), // Change the icon color here
+        iconTheme: IconThemeData(color: Colors.white, size: 30), // Change the icon color here
 
         title: Text(
           title,

@@ -171,7 +171,7 @@ class _AcSizeCalculatorScreenState extends State<AcSizeCalculatorScreen> {
               ),
               const SizedBox(height: 40),
               const SizedBox(height: 20),
-             Wrap(
+             Row(
                spacing: 20,
                children: [
                  SizedBox(
@@ -184,7 +184,7 @@ class _AcSizeCalculatorScreenState extends State<AcSizeCalculatorScreen> {
                                borderRadius: BorderRadius.circular(8.0), // Adjust this value
                              ))),
                      onPressed: calculateACSize,
-                     child: regularTextWidget(textTitle: 'Calculate Power', textSize: 18, textColor: AppColors.kWhite),
+                     child: regularTextWidget(textTitle: 'Calculate Power', textSize: 16, textColor: AppColors.kWhite),
                    ),
                  ),
                  SizedBox(
@@ -197,7 +197,7 @@ class _AcSizeCalculatorScreenState extends State<AcSizeCalculatorScreen> {
                                borderRadius: BorderRadius.circular(8.0), // Adjust this value
                              ))),
                      onPressed: resetFields,
-                     child: regularTextWidget(textTitle: 'Reset Fields', textSize: 18, textColor: AppColors.kWhite),
+                     child: regularTextWidget(textTitle: 'Reset Fields', textSize: 16, textColor: AppColors.kWhite),
                    ),
                  ),
                ],

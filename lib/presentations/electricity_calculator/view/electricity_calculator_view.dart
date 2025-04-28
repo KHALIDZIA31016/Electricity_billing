@@ -8,6 +8,7 @@ import '../../../extensions/size_box.dart';
 import '../../../gen/assets.gen.dart';
 import '../../air_conditioner/view/air_conditioner.dart';
 import '../../battery_life_view/battery_life_view.dart';
+import '../../electric_companies/view/electric_companies_screen.dart';
 import '../../solar_load_screen/view/solar_load_view.dart';
 import '../../solar_plant/view/solar_plant_view.dart';
 import '../../water_pump/view/water_pump.dart';
@@ -23,8 +24,12 @@ class ElectricityCalculator extends StatelessWidget {
     'Battery Life',
     'Air Conditioner Size',
     'Water Pump',
-    'Net Metering',
+    // 'Net Metering',
   ];
+  final List<Map<String, dynamic>> meteringName = [
+  {"name": "Net Metering", 'subtitle': 'Required Internet to check', "image": Assets.metering.path,
+  "url": "https://roshanpakistan.pk/net_metering/"},
+    ];
 
   final List<String> subTitle = [
     '17 appliances record',
@@ -33,7 +38,7 @@ class ElectricityCalculator extends StatelessWidget {
     'Required data to calculate',
     'Required data to calculate',
     'Required data to calculate',
-    'Internet required to find',
+    // 'Internet required to find',
   ];
 
   final List<String> images = [
@@ -43,7 +48,7 @@ class ElectricityCalculator extends StatelessWidget {
     Assets.battery.path,
     Assets.ac.path,
     Assets.pump.path,
-    Assets.metering.path,
+    // Assets.metering.path,
   ];
 
   @override
@@ -109,18 +114,6 @@ class ElectricityCalculator extends StatelessWidget {
                     margin: EdgeInsets.symmetric(vertical: 10),
                     borderRadius: BorderRadius.circular(16),
                     bgColor: AppColors.kDarkGreen1,
-                    // shadowColor: Colors.grey.shade400,
-                    // gradient: LinearGradient(
-                    //   stops: const [0.0, 0.5,  1.0],
-                    //   colors: [
-                    //     const Color(0xFF1B5E20),
-                    //     // const Color(0xFF388E3C), // A slightly less dark transition
-                    //     const Color(0xFF388E3C), // Another slightly less dark transition
-                    //     const Color(0xFF1B5E20),
-                    //   ],// Keeps the lighter color centered
-                    //   begin: Alignment.topCenter,
-                    //   end: Alignment.bottomCenter,
-                    // ),
                     blurRadius: 6,
                     offset: const Offset(2, 4),
                     child: ListTile(
@@ -146,6 +139,55 @@ class ElectricityCalculator extends StatelessWidget {
                   );
                 },
               ),
+            CustomContainer(
+              // ontap: () {
+              //   if (index == 0) {
+              //     Get.to(AppliancesScreen());
+              //   } else if(index == 3){
+              //     Get.to(BatteryLifeCalculator(
+              //       results: results,
+              //       title: namesTitle[index], // Pass the selected title
+              //     ));
+              //   } else if(index == 1){
+              //     Get.to(SolarCalculatorScreen());
+              //   }
+              //   else if(index == 2){
+              //     Get.to(SolarLoadView());
+              //   } else if(index == 4){
+              //     Get.to(AcSizeCalculatorScreen());
+              //   }else if(index == 5){
+              //     Get.to(WaterPumpCalculator());
+              //   }
+              // },
+              margin: EdgeInsets.symmetric(vertical: 10),
+              borderRadius: BorderRadius.circular(16),
+              bgColor: AppColors.kDarkGreen1,
+              blurRadius: 6,
+              offset: const Offset(2, 4),
+              child: ListTile(
+                dense: true,
+                onTap: () {
+                  Get.to(() => WebViewScreen(url: meteringName[0]["url"], companyName: meteringName[0]['name']));
+                },
+                leading: Image.asset(Assets.metering.path, scale: 18),
+                title: regularTextWidget(
+                  textTitle: meteringName[0]['name'],
+                  textSize: 18,
+                  textColor: AppColors.kWhite,
+                  fontWeight: FontWeight.w500,
+                ),
+                subtitle: regularTextWidget(
+                  textTitle: meteringName[0]['subtitle'],
+                  textSize: 14,
+                  textColor: AppColors.kWhite,
+                ),
+                trailing: Icon(
+                  Icons.arrow_forward_ios,
+                  color: AppColors.kOffWhiteGrey,
+                  size: 18,
+                ),
+              ),
+            ),
               24.asHeight,
             ],
           ),
