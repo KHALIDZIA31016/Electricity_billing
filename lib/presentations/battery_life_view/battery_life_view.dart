@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../ads_manager/banner_ads.dart';
+import '../../ads_manager/interstitial_ads.dart';
 import '../../core/themes/app_color.dart';
 import '../../core/widgets/custom_appBar.dart';
 import '../../core/widgets/custom_container.dart';
@@ -18,6 +20,8 @@ class BatteryLifeCalculator extends StatefulWidget {
 }
 
 class _BatteryLifeCalculatorState extends State<BatteryLifeCalculator> {
+  final BannerAdController bannerAdController = Get.find<BannerAdController>();
+  final interstitialAdController = Get.find<InterstitialAdController>();
   late List<Map<String, dynamic>> results;
 
   String selectedOption = 'Single battery';
@@ -36,31 +40,32 @@ class _BatteryLifeCalculatorState extends State<BatteryLifeCalculator> {
   @override
   void initState() {
     super.initState();
-    results = List.from(widget.results); // Make a mutable copy
+    results = List.from(widget.results);
+      bannerAdController.loadBannerAd('ad5');
+    interstitialAdController.checkAndShowAdOnVisit();
   }
 
   Widget _buildDropdown(String title, String value, List<String> items, Function(String?) onChanged) {
     return CustomContainer(
-      height: 74,
+      height: 66,
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      borderRadius: BorderRadius.circular(16),
-      bgColor: Colors.grey.shade400,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      borderRadius: BorderRadius.circular(10),
+      bgColor: Colors.grey.shade200,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          regularTextWidget(textTitle: title, textSize: 18, textColor: Colors.white),
+          regularTextWidget(textTitle: title, textSize: 18, textColor: Colors.black),
           Center(
             child: DropdownButton<String>(
               value: value,
               isDense: true,
-              dropdownColor: Colors.grey[800],
-              icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+              dropdownColor: Colors.white,
+              icon: const Icon(Icons.arrow_drop_down, color: Colors.black),
               underline: const SizedBox(), // Removes default underline
               items: items.map((String option) {
                 return DropdownMenuItem<String>(
                   value: option,
-                  child: Text(option, style: const TextStyle(color: Colors.white)),
+                  child: Text(option, style: const TextStyle(color: Colors.blue)),
                 );
               }).toList(),
               onChanged: onChanged,
@@ -73,22 +78,22 @@ class _BatteryLifeCalculatorState extends State<BatteryLifeCalculator> {
 
   Widget _buildTextField(String title, String hint, String? Function(String?)? validator, Function(String) onChanged) {
     return CustomContainer(
-      height: 74,
+      height: 66,
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
       borderRadius: BorderRadius.circular(16),
-      bgColor: Colors.grey.shade400,
+      bgColor:  Colors.grey.shade200,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          regularTextWidget(textTitle: title, textSize: 18, textColor: Colors.white),
+          regularTextWidget(textTitle: title, textSize: 18, textColor: Colors.black),
           Center(
             child: TextFormField(
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 isDense: true,
                 hintText: hint,
-                hintStyle: const TextStyle(color: Colors.white),
+                hintStyle: const TextStyle(color: Colors.grey),
                 border: InputBorder.none,
               ),
               onChanged: onChanged,
@@ -141,6 +146,10 @@ class _BatteryLifeCalculatorState extends State<BatteryLifeCalculator> {
             icon: const Icon(Icons.arrow_back_ios, color: AppColors.kWhite, size: 22),
           ),
         ),
+      ),
+      bottomNavigationBar: SizedBox(
+        width: double.infinity,
+        child: bannerAdController.getBannerAdWidget('ad5'), // Display the ad
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),

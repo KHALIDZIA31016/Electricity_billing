@@ -4,6 +4,8 @@ import 'package:electricity_app/core/widgets/text_widget.dart';
 import 'package:electricity_app/presentations/solar_load_screen/view/solar_result_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../ads_manager/banner_ads.dart';
+import '../../../ads_manager/interstitial_ads.dart';
 import '../../../core/themes/app_color.dart';
 import '../../../core/widgets/custom_appBar.dart';
 
@@ -13,8 +15,13 @@ class SolarLoadView extends StatefulWidget {
   @override
   State<SolarLoadView> createState() => _SolarLoadViewState();
 }
+
 class _SolarLoadViewState extends State<SolarLoadView> {
   int _currentStep = 0;
+  int _currentFieldIndex = 0; // To track the current input field index
+  final interstitialAdController = Get.find<InterstitialAdController>();
+  final BannerAdController bannerAdController = Get.find<BannerAdController>();
+
   final List<List<TextEditingController>> _controllers = List.generate(4, (_) => []);
   final List<int> _wattage = [
     40, 25, 10,
@@ -22,13 +29,15 @@ class _SolarLoadViewState extends State<SolarLoadView> {
     75, 100, 1500, 1000, 300, 200, 500, 1000,
     750
   ];
-
   final int panelCapacity = 350;
+  final List<Map<String, dynamic>> _submissions = [];
 
   @override
   void initState() {
     super.initState();
     _initializeControllers();
+    interstitialAdController.checkAndShowAdOnVisit();
+    bannerAdController.loadBannerAd('ad3');
   }
 
   void _initializeControllers() {
@@ -38,91 +47,115 @@ class _SolarLoadViewState extends State<SolarLoadView> {
     }
   }
 
-  void _nextStep() {
-    bool allFilled = _controllers[_currentStep].every((c) => c.text.trim().isNotEmpty);
-    if (allFilled) {
-      if (_currentStep < 3) {
-        setState(() => _currentStep++);
-      }
+  void _nextField() {
+    if (_currentFieldIndex < _controllers[_currentStep].length - 1) {
+      FocusScope.of(context).nextFocus(); // Move focus to the next text field
+      _currentFieldIndex++; // Increment the current field index
     } else {
-      Get.snackbar(
-        'Incomplete Fields',
-        'Please fill in all the fields before proceeding.',
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      _nextStep(); // If it's the last field in the step, proceed to next step
     }
   }
+  void _nextStep() {
+    // Validate and prepare the data before moving to the next step
+    for (var controller in _controllers[_currentStep]) {
+      String text = controller.text.trim();
+      if (text.isEmpty || int.tryParse(text) == null) {
+        controller.text = '0'; // Default value for empty fields and non-numeric input
+      }
+    }
 
+    if (_currentStep < 3) {
+      setState(() {
+        _currentStep++; // Move to the next step
+        _currentFieldIndex = 0; // Reset the field index
+      });
+      FocusScope.of(context).unfocus();
+      // Request focus for the first text field in the new step
+
+    }
+  }
   void _prevStep() {
     if (_currentStep > 0) {
-      setState(() => _currentStep--);
+      setState(() {
+        _currentStep--;
+        _currentFieldIndex = 0; // Reset the field index when going backward
+      });
     }
   }
 
   void _submitForm() {
-    bool allFilled = _controllers.expand((list) => list).every((controller) => controller.text.trim().isNotEmpty);
+    interstitialAdController.checkAndShowAdOnVisit();
+
     List<int> enteredQuantities = [];
     for (var section in _controllers) {
       for (var controller in section) {
-        enteredQuantities.add(int.tryParse(controller.text) ?? 0); // Add to the list
+        int quantity = int.tryParse(controller.text) ?? 0;
+        enteredQuantities.add(quantity);
       }
-    }
-    if (!allFilled) {
-      Get.snackbar(
-        'Incomplete Fields',
-        'Please fill all fields before submitting.',
-        backgroundColor: AppColors.kDarkGreen1.withOpacity(0.4),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-      );
-      return;
-
     }
 
     int totalLoad = 0;
-    int index = 0;
-
-    for (var section in _controllers) {
-      for (var controller in section) {
-        int quantity = int.tryParse(controller.text) ?? 0;
-        totalLoad += quantity * _wattage[index];
-        index++;
-      }
+    for (int index = 0; index < enteredQuantities.length; index++) {
+      totalLoad += enteredQuantities[index] * _wattage[index];
     }
 
     int panelsRequired = (totalLoad / panelCapacity).ceil();
+    _submissions.add({
+      'totalLoad': totalLoad,
+      'panelsRequired': panelsRequired,
+      'panelCapacity': panelCapacity,
+      'enteredQuantities': enteredQuantities,
+    });
 
-    Get.to(() => ResultSolar(
-      totalLoad: totalLoad,
-      panelsRequired: panelsRequired,
-      panelCapacity: panelCapacity,
-      enteredQuantities: enteredQuantities,
-    ));
+    // Navigate to SubmissionRecord immediately after submitting
+    Get.to(SubmissionRecord(submissions: _submissions));
+
+    // Optionally: reset controllers and stepper state for the next submission
+    _initializeControllers();
+    setState(() {
+      _currentStep = 0;
+      _currentFieldIndex = 0; // Reset the field index
+    });
   }
-
-  Widget _buildForm(List<String> labels, int stepIndex) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: List.generate(labels.length, (i) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-          child: TextFormField(
-            controller: _controllers[stepIndex][i],
-            keyboardType: TextInputType.number,
-            textInputAction: i < labels.length - 1 ? TextInputAction.next : TextInputAction.done,
-            style: TextStyle(color: AppColors.kDarkGreen1),
-            decoration: InputDecoration(
-              labelText: labels[i],
-              labelStyle: TextStyle(color: AppColors.kGrey8E.withOpacity(0.6)),
-              filled: true,
-              fillColor: AppColors.kGrey8E.withOpacity(0.2),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+  Widget _buildStepper() {
+    return SizedBox(
+      height: 126,
+      child: EasyStepper(
+        activeStep: _currentStep,
+        lineStyle: LineStyle(
+          lineLength: 40,
+          lineSpace: 6,
+          lineType: LineType.dashed,
+          lineThickness: 2,
+          activeLineColor: AppColors.kDarkGreen1,
+          defaultLineColor: AppColors.kGrey8E.withOpacity(0.3),
+          finishedLineColor: Colors.blue,
+        ),
+        stepRadius: 18,
+        finishedStepBackgroundColor: Colors.green,
+        finishedStepTextColor: Colors.black,
+        activeStepTextColor: Colors.blue,
+        steps: [
+          'Lighting',
+          'Electronics',
+          'Home Appliances',
+          'Utility Equip.'
+        ].asMap().entries.map((entry) {
+          int index = entry.key;
+          String title = entry.value;
+          return EasyStep(
+            customStep: CircleAvatar(
+              radius: 8,
+              backgroundColor: Colors.grey.shade400,
+              child: CircleAvatar(
+                  backgroundColor: _currentStep >= index ? Colors.white : Colors.grey
+              ),
             ),
-          ),
-        );
-      }),
+            title: title,
+            topTitle: index % 2 == 1,
+          );
+        }).toList(),
+      ),
     );
   }
 
@@ -150,46 +183,27 @@ class _SolarLoadViewState extends State<SolarLoadView> {
     }
   }
 
-  Widget _buildStepper() {
-    return EasyStepper(
-      activeStep: _currentStep,
-      lineStyle: LineStyle(
-        lineLength: 80,
-        lineSpace: 10,
-        lineType: LineType.dashed,
-        lineThickness: 2,
-        activeLineColor: AppColors.kDarkGreen1,
-        defaultLineColor: AppColors.kGrey8E.withOpacity(0.3),
-        finishedLineColor: Colors.blue,
-      ),
-      activeStepTextColor: AppColors.kDarkGreen1,
-      finishedStepTextColor: Colors.blue,
-      internalPadding: 0,
-      showLoadingAnimation: false,
-      stepRadius: 8,
-      showStepBorder: false,
-      onStepReached: (index) => setState(() => _currentStep = index),
-      steps: [
-        'Lighting',
-        'Electronics',
-        'Home Appliances',
-        'Utility Equip.'
-      ].asMap().entries.map((entry) {
-        int i = entry.key;
-        String title = entry.value;
-        return EasyStep(
-          customStep: CircleAvatar(
-            radius: 8,
-            backgroundColor: Colors.white,
-            child: CircleAvatar(
-              radius: 7,
-              backgroundColor: _currentStep >= i ? Colors.blue : Colors.grey,
+  Widget _buildForm(List<String> labels, int stepIndex) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: List.generate(labels.length, (i) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+          child: TextFormField(
+            controller: _controllers[stepIndex][i],
+            keyboardType: TextInputType.number,
+            textInputAction: i < labels.length - 1 ? TextInputAction.next : TextInputAction.done,
+            style: TextStyle(color: AppColors.kDarkGreen1),
+            decoration: InputDecoration(
+              labelText: labels[i],
+              labelStyle: TextStyle(color: AppColors.kGrey8E.withOpacity(0.6)),
+              filled: true,
+              fillColor: AppColors.kGrey8E.withOpacity(0.2),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
             ),
           ),
-          title: title,
-          topTitle: i % 2 == 1,
         );
-      }).toList(),
+      }),
     );
   }
 
@@ -207,13 +221,38 @@ class _SolarLoadViewState extends State<SolarLoadView> {
           ),
         ),
       ),
+      bottomNavigationBar: Container(
+        width: double.infinity,
+        child: bannerAdController.getBannerAdWidget('ad3'),
+      ),
       body: Column(
         children: [
           _buildStepper(),
           const SizedBox(height: 10),
           Expanded(
             child: SingleChildScrollView(
-              child: _buildContentForStep(),
+              child: Column(
+                children: [
+                  _buildContentForStep(),
+                  SizedBox(height: 20), // Space before submissions
+                  GestureDetector(
+                    onTap: () {
+                      Get.to(SubmissionRecord(submissions: _submissions));
+                    },
+                    child: CustomContainer(
+                      height: 46, width: 200,
+                      bgColor: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(10),
+                      child: Center(
+                        child: Text(
+                          'Submissions Records',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           Padding(
@@ -239,7 +278,7 @@ class _SolarLoadViewState extends State<SolarLoadView> {
                 CustomContainer(
                   height: 46,
                   width: 130,
-                  ontap: _currentStep == 3 ? _submitForm : _nextStep,
+                  ontap: _currentStep == 3 ? _submitForm : _nextField, // Call nextField instead of nextStep
                   borderRadius: BorderRadius.circular(10),
                   bgColor: AppColors.kDarkGreen1.withOpacity(.7),
                   child: Center(
@@ -259,5 +298,218 @@ class _SolarLoadViewState extends State<SolarLoadView> {
   }
 }
 
+class SubmissionRecord extends StatelessWidget {
+  final List<Map<String, dynamic>> submissions;
 
+  SubmissionRecord({super.key, required this.submissions});
 
+  @override
+  Widget build(BuildContext context) {
+    final BannerAdController bannerAdController = Get.find<BannerAdController>();
+
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(70),
+        child: CustomAppBar(
+          title: 'Submissions Record',
+          borderColor: AppColors.kDarkGreen2,
+          leading: IconButton(
+            onPressed: () => Get.back(),
+            icon: const Icon(Icons.arrow_back_ios, color: AppColors.kWhite, size: 22),
+          ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        width: double.infinity,
+        child: bannerAdController.getBannerAdWidget('ad2'),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (submissions.isNotEmpty) ...[
+                for (int index = 0; index < submissions.length; index++)
+                  CustomContainer(
+                    height: 220,
+                    borderRadius: BorderRadius.circular(10),
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    border: Border.all(color: Colors.grey.shade300, width: 2),
+                    child: InkWell(
+                      onTap: () {
+                        var submission = submissions[index];
+                        Get.to(
+                          DetailScreen(
+                            totalLoad: submission['totalLoad'],
+                            panelsRequired: submission['panelsRequired'],
+                            panelCapacity: submission['panelCapacity'],
+                            enteredQuantities: submission['enteredQuantities'],
+                          ),
+                        );
+                      },
+                      child: CustomContainer(
+                        margin: EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: 10,
+                          children: [
+                            ListTile(
+                              dense: true,
+                              title: Text('Submitted Record: '),
+                              trailing: CircleAvatar(
+                                  backgroundColor: Colors.grey,
+                                  radius: 16,
+                                  child: Text('${index + 1}', style: TextStyle(color: Colors.white),)),
+                            ),
+                            Divider(color: Colors.green, thickness: 2,),
+                            CustomContainer(
+                              borderRadius: BorderRadius.circular(10),
+                              bgColor: Colors.grey.shade300,
+                              child: ListTile(
+                                dense: true,
+                                title:  Text('Total Load: ', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600)),
+                                trailing: Text('${submissions[index]['totalLoad']} Watts'),
+                              ),
+                            ),
+                            CustomContainer(
+                              borderRadius: BorderRadius.circular(10),
+                              bgColor: Colors.grey.shade300,
+                              child: ListTile(
+                                dense: true,
+                                title:  Text('Panels Required: '),
+                                trailing: Text('${submissions[index]['panelsRequired']} panels'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+              ] else ...[
+                Center(child: Text('No submissions available.')),
+              ]
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class DetailScreen extends StatelessWidget {
+  final int totalLoad;
+  final int panelsRequired;
+  final int panelCapacity;
+  final List<int> enteredQuantities;
+
+  const DetailScreen({
+    super.key,
+    required this.totalLoad,
+    required this.panelsRequired,
+    required this.panelCapacity,
+    required this.enteredQuantities,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    List<String> titles = [
+      'Tube Light', 'Energy Saver', 'LED bulbs',
+      'TV', 'LED TV', 'Computer', 'Laptop',
+      'Ceiling Fan', 'Stand Fan', 'Split AC', 'Inverter AC',
+      'Freezer', 'Refrigerator', 'Washing Machine',
+      'Iron', 'Water Pumps',
+    ];
+
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(70),
+        child: CustomAppBar(
+          title: 'Solar Load Details',
+          borderColor: AppColors.kDarkGreen2,
+          leading: IconButton(
+            onPressed: () => Get.back(),
+            icon: const Icon(Icons.arrow_back_ios, color: AppColors.kWhite, size: 22),
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          child: Column(
+            children: [
+              Wrap(children: [
+                regularTextWidget(
+                  textTitle: '🔋 Total Load (in watts): ',
+                  textSize: 18,
+                  textColor: AppColors.kPineGreen,
+                  fontWeight: FontWeight.w600,
+                ),
+                regularTextWidget(
+                  textTitle: '${totalLoad} Watts',
+                  textSize: 18,
+                  textColor: Colors.blue,
+                  fontWeight: FontWeight.w600,
+                ),
+              ]),
+              Divider(color: AppColors.kDarkGreen1, indent: 60, endIndent: 60, thickness: 2),
+              Wrap(children: [
+                regularTextWidget(
+                  textTitle: '☀️ Panels Required: ',
+                  textSize: 18,
+                  textColor: AppColors.kPineGreen,
+                  fontWeight: FontWeight.w600,
+                ),
+                regularTextWidget(
+                  textTitle: "${panelsRequired} panels",
+                  textSize: 18,
+                  textColor: Colors.blue,
+                  fontWeight: FontWeight.w600,
+                ),
+              ]),
+              Center(
+                child: regularTextWidget(
+                  textTitle: " (Each ${panelCapacity} Watts)",
+                  textSize: 16,
+                  textColor: AppColors.kBlack,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Divider(color: AppColors.kDarkGreen1, thickness: 2),
+              const SizedBox(height: 16),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: titles.length,
+                itemBuilder: (context, index) {
+                  return CustomContainer(
+                    bgColor: AppColors.kEmeraldGreen.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(16),
+                    margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    child: ListTile(
+                      dense: true,
+                      title: regularTextWidget(
+                        textTitle: titles[index],
+                        textSize: 16,
+                        textColor: AppColors.kBlack,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      trailing: regularTextWidget(
+                        textTitle: '${enteredQuantities[index]}',
+                        textSize: 16,
+                        textColor: AppColors.kSoftBlack,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

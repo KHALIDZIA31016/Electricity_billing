@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../ads_manager/banner_ads.dart';
+import '../../../ads_manager/interstitial_ads.dart';
 import '../../../core/themes/app_color.dart';
 import '../../../core/widgets/custom_appBar.dart';
 import '../../../core/widgets/custom_container.dart';
@@ -12,6 +14,11 @@ class AcSizeCalculatorScreen extends StatefulWidget {
 }
 
 class _AcSizeCalculatorScreenState extends State<AcSizeCalculatorScreen> {
+
+
+  final BannerAdController bannerAdController = Get.find<BannerAdController>();
+  final interstitialAdController = Get.find<InterstitialAdController>();
+
   final TextEditingController roomLengthController = TextEditingController();
   final TextEditingController roomWidthController = TextEditingController();
   final TextEditingController roomHeightController = TextEditingController();
@@ -104,7 +111,12 @@ class _AcSizeCalculatorScreenState extends State<AcSizeCalculatorScreen> {
       ],
     );
   }
-
+  @override
+  void initState() {
+    super.initState();
+    bannerAdController.loadBannerAd('ad5');
+    interstitialAdController.checkAndShowAdOnVisit();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -125,52 +137,55 @@ class _AcSizeCalculatorScreenState extends State<AcSizeCalculatorScreen> {
           ),
         ),
       ),
+      bottomNavigationBar: Container(
+        width: double.infinity,
+        child: bannerAdController.getBannerAdWidget('ad5'), // Display the ad
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
           child: Column(
+            spacing: 8,
             children: [
-              const SizedBox(height: 12),
+
               CustomContainer(
+                height: 80,
                 width: double.infinity,
                 padding: EdgeInsets.all(12),
-                bgColor: AppColors.kDarkGreen1.withValues(alpha: .44),
+                bgColor: AppColors.kDarkGreen1.withValues(alpha: .084),
                 borderRadius: BorderRadius.circular(10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Temperature:', style: TextStyle(fontSize: 16)),
-                    Center(child: Text('50°C', style: TextStyle(fontSize: 16))),
+                    Text('Temperature:', style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.w600)),
+                    Center(child: Text('50°C', style: TextStyle(fontSize: 16, color: Colors.blue, fontWeight: FontWeight.w600))),
                   ],
                 ),
               ),
-              const SizedBox(height: 40),
               Text(
                 'Required Data :',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 12),
               buildTextField('Room Length', roomLengthController, selectedLengthUnit,
                       (value) => setState(() => selectedLengthUnit = value!)),
               buildTextField('Room Width', roomWidthController, selectedWidthUnit,
                       (value) => setState(() => selectedWidthUnit = value!)),
-              buildTextField('Room height', roomWidthController, selectedHeightUnit,
+              buildTextField('Room height', roomHeightController, selectedHeightUnit,
                       (value) => setState(() => selectedHeightUnit = value!)),
-
-              const SizedBox(height: 12),
-
               TextField(
                 controller: numberOfPersonsController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: 'Number Of Persons',
                   filled: true,
-                  fillColor: Colors.grey.shade300,
-                  border: OutlineInputBorder(),
+                  fillColor: Colors.grey.shade200,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10)
+                  ),
                 ),
               ),
-              const SizedBox(height: 40),
               const SizedBox(height: 20),
+
              Row(
                spacing: 20,
                children: [
@@ -178,7 +193,8 @@ class _AcSizeCalculatorScreenState extends State<AcSizeCalculatorScreen> {
                    height: 46,
                    child: ElevatedButton(
                      style: ButtonStyle(
-                         backgroundColor: WidgetStatePropertyAll(AppColors.kDarkGreen1.withValues(alpha: .43)),
+                         backgroundColor: WidgetStatePropertyAll(
+                             AppColors.kDarkGreen1.withValues(alpha: .43)),
                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                              RoundedRectangleBorder(
                                borderRadius: BorderRadius.circular(8.0), // Adjust this value
@@ -191,7 +207,7 @@ class _AcSizeCalculatorScreenState extends State<AcSizeCalculatorScreen> {
                    height: 46,
                    child: ElevatedButton(
                      style: ButtonStyle(
-                         backgroundColor: WidgetStatePropertyAll(AppColors.kDarkLighter.withValues(alpha: .23)),
+                         backgroundColor: WidgetStatePropertyAll(AppColors.kDarkLighter.withValues(alpha: .08)),
                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                              RoundedRectangleBorder(
                                borderRadius: BorderRadius.circular(8.0), // Adjust this value
@@ -203,11 +219,11 @@ class _AcSizeCalculatorScreenState extends State<AcSizeCalculatorScreen> {
                ],
              ),
 
-              const SizedBox(height: 40),
+              const SizedBox(height: 20),
               CustomContainer(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
-                bgColor: Colors.blue[300],
+                bgColor: AppColors.kDarkGreen1.withValues(alpha: .84),
                 borderRadius: BorderRadius.circular(10),
                 child: Column(
                   children: [

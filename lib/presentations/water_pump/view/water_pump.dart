@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
+import '../../../ads_manager/banner_ads.dart';
+import '../../../ads_manager/interstitial_ads.dart';
 import '../../../core/themes/app_color.dart';
 import '../../../core/widgets/custom_appBar.dart';
 import '../../../core/widgets/custom_container.dart';
@@ -18,6 +20,9 @@ class WaterPumpCalculator extends StatefulWidget {
 }
 
 class _WaterPumpCalculatorState extends State<WaterPumpCalculator> {
+  final BannerAdController bannerAdController = Get.find<BannerAdController>();
+  final interstitialAdController = Get.find<InterstitialAdController>();
+
   final _dischargeController = TextEditingController();
   final _headController = TextEditingController();
   double _horsepower = 0.0;
@@ -60,6 +65,13 @@ class _WaterPumpCalculatorState extends State<WaterPumpCalculator> {
       _horsepower = 0.0;
     });
   }
+  @override
+  void initState() {
+    super.initState();
+
+    bannerAdController.loadBannerAd('ad5');
+    interstitialAdController.checkAndShowAdOnVisit();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +91,10 @@ class _WaterPumpCalculatorState extends State<WaterPumpCalculator> {
             ),
           ),
         ),
+      ),
+      bottomNavigationBar: Container(
+        width: double.infinity,
+        child: bannerAdController.getBannerAdWidget('ad5'), // Display the ad
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

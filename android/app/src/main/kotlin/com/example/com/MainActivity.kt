@@ -1,4 +1,4 @@
-package com.example.electricity_app
+package com.electricitybillcheck.billchecker
 
 import io.flutter.embedding.android.FlutterActivity
 

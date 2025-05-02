@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../../ads_manager/interstitial_ads.dart';
 import '../../../../../core/widgets/neumorphic_btn.dart';
 import '../../../../../gen/assets.gen.dart';
+import '../../../../../services/remote_config_service.dart';
 import '../../../../electricity_calculator/view/electricity_calculator_view.dart';
 
 
 
-class CalculatorTab extends StatelessWidget {
+class CalculatorTab extends StatefulWidget {
+  @override
+  State<CalculatorTab> createState() => _CalculatorTabState();
+}
+
+class _CalculatorTabState extends State<CalculatorTab> {
   @override
   Widget build(BuildContext context) {
     return Center(

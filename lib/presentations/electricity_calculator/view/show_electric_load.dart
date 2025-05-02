@@ -1,123 +1,315 @@
+// import 'package:electricity_app/core/themes/app_color.dart';
+// import 'package:electricity_app/core/widgets/custom_appBar.dart';
+// import 'package:electricity_app/core/widgets/custom_container.dart';
+// import 'package:electricity_app/core/widgets/text_widget.dart';
 // import 'package:electricity_app/extensions/size_box.dart';
+// import 'package:electricity_app/gen/assets.gen.dart';
 // import 'package:flutter/material.dart';
 // import 'package:get/get.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:webview_flutter/webview_flutter.dart';
 //
-// import '../../../core/themes/app_color.dart';
-// import '../../../core/widgets/custom_appBar.dart';
-// import '../../../core/widgets/custom_container.dart';
-// import '../../../core/widgets/text_widget.dart';
+// import '../../../ads_manager/banner_ads.dart';
+// import '../../../ads_manager/interstitial_ads.dart';
+// import '../../../services/remote_config_service.dart';
+// import '../controller/electric_companies_control.dart';
 //
-// class ShowElectricityResult extends StatefulWidget {
-//   const ShowElectricityResult({super.key, required this.results});
-//
-//   final List<Map<String, dynamic>> results;
+// class ElectricCompaniesScreen extends StatefulWidget {
+//   ElectricCompaniesScreen({super.key});
 //
 //   @override
-//   State<ShowElectricityResult> createState() => _ShowElectricityResultState();
+//   State<ElectricCompaniesScreen> createState() => _ElectricCompaniesScreenState();
 // }
 //
-// class _ShowElectricityResultState extends State<ShowElectricityResult> {
-//   late List<Map<String, dynamic>> results;
+// class _ElectricCompaniesScreenState extends State<ElectricCompaniesScreen> {
+//   final interstitialAdController = Get.find<InterstitialAdController>();
+//   final BannerAdController bannerAdController = Get.find<BannerAdController>();
 //
-//   String selectedOption = 'Single battery';
-//   final List<String> options = ['Single battery', 'Parallel battery', 'Series battery'];
+//   final ElectricCompaniesController controller = Get.put(ElectricCompaniesController());
+//   final List<Map<String, dynamic>> companies = [
+//     {"name": "IESCO", 'location': 'Islamabad', "image": Assets.iesco.path,
+//       "url": "https://bill.pitc.com.pk/iescobill"},
 //
-//   String selectedTemperature = '0*C to 32*F';
-//   final List<String> temperatureOptions = ['0*C to 32*F', '33*F to 60*F', '61*F to 100*F'];
 //
-//   String selectedLoad = '0 watt';
-//   final List<String> loadOptions = ['0 watt', '100 watt', '200 watt', '1000 watt'];
+//     {"name": "SEPCO", 'location': 'Sukkur', "image": Assets.sepco.path,
+//       "url": "https://bill.pitc.com.pk/sepcobill"},
 //
-//   String batteryCapacity = '';
-//   String dischargeSafety = '';
-//   String efficiency = '';
+//     {"name": "LESCO", 'location': 'Lahore', "image": Assets.lesco.path,
+//       "url": "https://bill.pitc.com.pk/lescobill"},
+//
+//     {"name": "PESCO", 'location': 'Peshawar', "image": Assets.pesco.path,
+//       "url": "https://bill.pitc.com.pk/pescobill"},
+//
+//     {"name": "QESCO", 'location': 'Quetta', "image": Assets.qesco.path,
+//       "url": "https://bill.pitc.com.pk/qescobill"},
+//
+//     {"name": "TESCO", 'location': 'Tribal Areas', "image": Assets.teco.path,
+//       "url": "https://bill.pitc.com.pk/tescobill"},
+//
+//     {"name": "GEPCO", 'location': 'Gujranwala', "image": Assets.gepco.path,
+//       "url": "https://bill.pitc.com.pk/gepcobill"},
+//
+//     {"name": "FESCO", 'location': 'Faisalabad', "image": Assets.fesco.path,
+//       "url": "https://bill.pitc.com.pk/fescobill"},
+//
+//     {"name": "MEPCO", 'location': 'Faisalabad', "image": Assets.mepco.path,
+//       "url": "https://bill.pitc.com.pk/mepcobill"},
+//
+//     {"name": "HESCO", 'location': 'Faisalabad', "image": Assets.hesco.path,
+//       "url": "https://bill.pitc.com.pk/hescobill"},
+//
+//     {"name": "K-ELECTRIC", 'location': 'Karachi', "image": Assets.kelectric.path,
+//       "url": "https://staging.ke.com.pk:24555/"},
+//
+//   ];
+//
+//   @override
+//   void initState() {
+//     // TODO: implement initState
+//     super.initState();
+//     interstitialAdController.checkAndShowAdOnVisit();
+//     bannerAdController.loadBannerAd('ad4');
+//
+//   }
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: AppColors.kWhite,
+//       appBar: PreferredSize(
+//         preferredSize: Size(0, 70),
+//         child: CustomAppBar(
+//           title: 'Electric Companies',
+//           leading: IconButton(
+//             onPressed: () => Get.back(),
+//             icon: Icon(Icons.arrow_back_ios, color: AppColors.kWhite, size: 22),
+//           ),
+//         ),
+//       ),
+//       bottomNavigationBar: Container(
+//         width: double.infinity,
+//         child: bannerAdController.getBannerAdWidget('ad4'), // Display the ad
+//       ),
+//       body: Padding(
+//         padding: const EdgeInsets.symmetric(horizontal: 16),
+//         child: SingleChildScrollView(
+//           child: Column(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               20.asHeight,
+//               Center(
+//                 child: regularTextWidget(
+//                   textTitle: 'Electricity Supply Companies in Pakistan',
+//                   textSize: 18,
+//                   textColor: AppColors.kCharcoal,
+//                   fontWeight: FontWeight.w600,
+//                 ),
+//               ),
+//               20.asHeight,
+//               GridView.builder(
+//                 shrinkWrap: true,
+//                 physics: const NeverScrollableScrollPhysics(),
+//                 itemCount: companies.length,
+//                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+//                   crossAxisCount: 2,
+//                   childAspectRatio: 2.6 / 3,
+//                   crossAxisSpacing: 12,
+//                   mainAxisSpacing: 12,
+//                 ),
+//                 itemBuilder: (context, index) {
+//                   final company = companies[index];
+//                   return CustomContainer(
+//                     ontap: () {
+//                       interstitialAdController.checkAndShowAdOnVisit();
+//                       Get.to(() => WebViewScreen(url: company["url"], companyName: companies[index]['name'],));
+//                     },
+//                     padding: const EdgeInsets.all(12),
+//                     borderRadius: BorderRadius.circular(16),
+//                     bgColor: AppColors.kWhite,
+//                     shadowColor: Colors.grey.shade400,
+//                     blurRadius: 6,
+//                     offset: const Offset(2, 4),
+//                     child: Column(
+//                       mainAxisAlignment: MainAxisAlignment.center,
+//                       children: [
+//                         Image.asset(company['image'], scale: 3),
+//                         10.asHeight,
+//                         regularTextWidget(
+//                           textTitle: company['name'],
+//                           textSize: 20,
+//                           textColor: AppColors.kBlack0D.withOpacity(0.8),
+//                           fontWeight: FontWeight.w400,
+//
+//                         ),
+//                         regularTextWidget(
+//                           textTitle: company['location'],
+//                           textSize: 14,
+//                           textColor: Colors.blue,
+//                           fontWeight: FontWeight.w600,
+//                         ),
+//                       ],
+//                     ),
+//                   );
+//                 },
+//               ),
+//               24.asHeight,
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+// //
+// // class WebViewScreen extends StatefulWidget {
+// //   final String url;
+// //   final String companyName;
+// //
+// //   const WebViewScreen({super.key, required this.url, required this.companyName});
+// //
+// //   @override
+// //   State<WebViewScreen> createState() => _WebViewScreenState();
+// // }
+// //
+// // class _WebViewScreenState extends State<WebViewScreen> {
+// //   late final WebViewController controller;
+// //   bool isLoading = true;
+// //
+// //   @override
+// //   void initState() {
+// //     super.initState();
+// //     controller = WebViewController()
+// //       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+// //       ..setNavigationDelegate(
+// //         NavigationDelegate(
+// //           onPageStarted: (url) {
+// //             setState(() {
+// //               isLoading = true;
+// //             });
+// //           },
+// //           onPageFinished: (url) {
+// //             setState(() {
+// //               isLoading = false;
+// //             });
+// //           },
+// //           onNavigationRequest: (request) {
+// //             if (request.url.startsWith('https://www.youtube.com/')) {
+// //               return NavigationDecision.prevent;
+// //             }
+// //             return NavigationDecision.navigate;
+// //           },
+// //         ),
+// //       )
+// //       ..loadRequest(Uri.parse(widget.url));
+// //   }
+// //
+// //   @override
+// //   Widget build(BuildContext context) {
+// //     return Scaffold(
+// //       backgroundColor: AppColors.kWhite,
+// //       appBar: PreferredSize(
+// //         preferredSize: const Size.fromHeight(70),
+// //         child: CustomAppBar(
+// //           title:  widget.companyName.toUpperCase(),
+// //           leading: IconButton(
+// //             onPressed: () => Get.back(),
+// //             icon: Icon(Icons.arrow_back_ios, color: AppColors.kWhite, size: 22),
+// //           ),
+// //         ),
+// //       ),
+// //       body: Stack(
+// //         children: [
+// //           WebViewWidget(controller: controller),
+// //           if (isLoading)
+// //             const Center(
+// //               child: CircularProgressIndicator(),
+// //             ),
+// //         ],
+// //       ),
+// //     );
+// //   }
+// // }
+// //
+// //
+//
+// class WebViewScreen extends StatefulWidget {
+//   final String url;
+//   final String companyName;
+//
+//   const WebViewScreen({super.key, required this.url, required this.companyName});
+//
+//   @override
+//   State<WebViewScreen> createState() => _WebViewScreenState();
+// }
+//
+// class _WebViewScreenState extends State<WebViewScreen> {
+//   late final WebViewController controller;
+//   bool isLoading = true;
+//   String? referenceNumber;
 //
 //   @override
 //   void initState() {
 //     super.initState();
-//     results = List.from(widget.results); // Make a mutable copy
+//     _loadReferenceNumber(); // Load the saved reference number
+//     controller = WebViewController()
+//       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+//       ..setNavigationDelegate(
+//         NavigationDelegate(
+//           onPageStarted: (url) {
+//             setState(() {
+//               isLoading = true;
+//             });
+//           },
+//           onPageFinished: (url) {
+//             setState(() {
+//               isLoading = false;
+//             });
+//           },
+//           onNavigationRequest: (request) {
+//             // Save reference number if the URL contains it
+//             if (request.url.contains('ref=')) {
+//               Uri uri = Uri.parse(request.url);
+//               String? ref = uri.queryParameters['ref'];
+//               if (ref != null) {
+//                 _saveReferenceNumber(ref); // Save reference number from query parameter
+//               }
+//             }
+//
+//             if (request.url.startsWith('https://www.youtube.com/')) {
+//               return NavigationDecision.prevent;
+//             }
+//             return NavigationDecision.navigate;
+//           },
+//         ),
+//       )
+//       ..loadRequest(Uri.parse(_getInitialUrl())); // Load the initial URL with reference number if available
 //   }
 //
-//   Widget _buildDropdown(String title, String value, List<String> items, Function(String?) onChanged) {
-//     return CustomContainer(
-//       height: 70,
-//       width: double.infinity,
-//       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-//       borderRadius: BorderRadius.circular(16),
-//       bgColor: Colors.grey,
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           regularTextWidget(textTitle: title, textSize: 18, textColor: Colors.white),
-//           Center(
-//             child: DropdownButton<String>(
-//               value: value,
-//               isDense: true,
-//               dropdownColor: Colors.grey[800],
-//               icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-//               underline: const SizedBox(), // Removes default underline
-//               items: items.map((String option) {
-//                 return DropdownMenuItem<String>(
-//                   value: option,
-//                   child: Text(option, style: const TextStyle(color: Colors.white)),
-//                 );
-//               }).toList(),
-//               onChanged: onChanged,
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
+//   Future<void> _loadReferenceNumber() async {
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
+//     referenceNumber = prefs.getString('reference_number');
 //   }
 //
-//   Widget _buildTextField(String title, String hint, String? Function(String?)? validator, Function(String) onChanged) {
-//     return CustomContainer(
-//       height: 70,
-//       width: double.infinity,
-//       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-//       borderRadius: BorderRadius.circular(16),
-//       bgColor: Colors.grey,
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           regularTextWidget(textTitle: title, textSize: 18, textColor: Colors.white),
-//           Center(
-//             child: TextFormField(
-//               keyboardType: TextInputType.number,
-//               decoration: InputDecoration(
-//                 isDense: true,
-//                 hintText: hint,
-//                 hintStyle: const TextStyle(color: Colors.white),
-//                 border: InputBorder.none,
-//               ),
-//               onChanged: onChanged,
-//               validator: validator,
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
+//   Future<void> _saveReferenceNumber(String referenceNumber) async {
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
+//     await prefs.setString('reference_number', referenceNumber);
 //   }
 //
-//   void _calculateEnergy() {
-//     // Convert string inputs to numbers
-//     double load = double.tryParse(loadOptions.firstWhere((option) => option == selectedLoad).split(' ')[0]) ?? 0;
-//     double capacity = double.tryParse(batteryCapacity) ?? 0;
-//     double safety = double.tryParse(dischargeSafety) ?? 0;
-//     double efficiencyValue = double.tryParse(efficiency) ?? 0;
+//   String _getInitialUrl() {
+//     String initialUrl = widget.url;
 //
-//     // Example calculation: Total energy = (Load * Capacity * Efficiency / 100) * (1 - (Safety / 100))
-//     double totalEnergy = (load * capacity * (efficiencyValue / 100)) * (1 - (safety / 100));
-//
-//     // Show the result in a dialog
-//     Get.defaultDialog(
-//       title: "Calculated Energy",
-//       content: Text("Total Energy: ${totalEnergy.toStringAsFixed(2)} Wh"),
-//       confirm: TextButton(
-//         onPressed: () => Get.back(),
-//         child: const Text("OK"),
-//       ),
-//     );
+//     // Check if there's a saved reference number and append it to the URL
+//     if (referenceNumber != null && referenceNumber!.isNotEmpty) {
+//       final Uri uri = Uri.parse(initialUrl);
+//       final queryParameters = uri.queryParameters;
+//       String newUrl = Uri(
+//         scheme: uri.scheme,
+//         host: uri.host,
+//         path: uri.path,
+//         queryParameters: {...queryParameters, 'ref': referenceNumber!}, // Include the reference number
+//       ).toString();
+//       return newUrl;
+//     }
+//     return initialUrl; // Return original URL if no reference number
 //   }
 //
 //   @override
@@ -127,77 +319,19 @@
 //       appBar: PreferredSize(
 //         preferredSize: const Size.fromHeight(70),
 //         child: CustomAppBar(
-//           title: 'Power Estimation Results',
+//           title: widget.companyName.toUpperCase(),
 //           leading: IconButton(
-//             onPressed: Get.back,
-//             icon: const Icon(Icons.arrow_back_ios, color: AppColors.kWhite, size: 22),
+//             onPressed: () => Get.back(),
+//             icon: Icon(Icons.arrow_back_ios, color: AppColors.kWhite, size: 22),
 //           ),
 //         ),
 //       ),
-//       body: Padding(
-//         padding: const EdgeInsets.all(12.0),
-//         child: SingleChildScrollView(
-//           child: Column(
-//             spacing: 12,
-//             children: [
-//               _buildDropdown('Battery Type', selectedOption, options, (newValue) {
-//                 setState(() {
-//                   selectedOption = newValue!;
-//                 });
-//               }),
-//               regularTextWidget(textTitle: 'Required Data', textSize: 22, textColor: AppColors.kDarker, fontWeight: FontWeight.w700),
-//               _buildDropdown('Ambient Temperature', selectedTemperature, temperatureOptions, (newValue) {
-//                 setState(() {
-//                   selectedTemperature = newValue!;
-//                 });
-//               }),
-//               _buildTextField('Number of Batteries', '0', null, (value) {
-//                 // Handle number of batteries change
-//               }),
-//               Row(
-//                 children: [
-//                   Flexible(child: _buildTextField('Load', '0', null, (value) {
-//                     // Handle load change
-//                   })),
-//                   const SizedBox(width: 10),
-//                   Flexible(child: _buildDropdown('Load Options', selectedLoad, loadOptions, (newValue) {
-//                     setState(() {
-//                       selectedLoad = newValue!;
-//                     });
-//                   })),
-//                 ],
-//               ),
-//               Row(
-//                 children: [
-//                   Flexible(child: _buildTextField('Discharge Safety', '0%', null, (value) {
-//                     dischargeSafety = value;
-//                   })),
-//                   const SizedBox(width: 10),
-//                   Flexible(child: _buildTextField('Efficiency', '0%', null, (value) {
-//                     efficiency = value;
-//                   })),
-//                 ],
-//               ),
-//               _buildTextField('Battery Capacity', '0', null, (value) {
-//                 batteryCapacity = value;
-//               }),
-//               const SizedBox(height: 20),
-//               CustomContainer(
-//                 height: 48,
-//                 width: double.infinity,
-//                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-//                 borderRadius: BorderRadius.circular(16),
-//                 bgColor: Colors.green,
-//                 child: Center(
-//                   child: GestureDetector(
-//                     onTap: _calculateEnergy,
-//                     child: regularTextWidget(textTitle: 'Calculate', textSize: 18, textColor: Colors.white),
-//                   ),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
+//       body: Stack(
+//         children: [
+//           WebViewWidget(controller: controller),
+//           if (isLoading)
+//             const Center(child: CircularProgressIndicator()),
+//         ],
 //       ),
 //     );
 //   }

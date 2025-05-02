@@ -1,6 +1,8 @@
 import 'package:electricity_app/core/themes/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../ads_manager/banner_ads.dart';
+import '../../../ads_manager/interstitial_ads.dart';
 import '../../../core/widgets/custom_appBar.dart';
 import '../../../core/widgets/custom_container.dart';
 import '../../../core/widgets/text_widget.dart';
@@ -13,10 +15,22 @@ import '../../solar_load_screen/view/solar_load_view.dart';
 import '../../solar_plant/view/solar_plant_view.dart';
 import '../../water_pump/view/water_pump.dart';
 import 'appliances_screen_view.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
-class ElectricityCalculator extends StatelessWidget {
+class ElectricityCalculator extends StatefulWidget {
   ElectricityCalculator({super.key});
+
+  @override
+  State<ElectricityCalculator> createState() => _ElectricityCalculatorState();
+}
+
+class _ElectricityCalculatorState extends State<ElectricityCalculator> {
+  final interstitialAdController = Get.find<InterstitialAdController>();
+  final BannerAdController bannerAdController = Get.find<BannerAdController>();
+
+
   List<Map<String, dynamic>> results = [];
+
   final List<String> namesTitle = [
     'Home Generator Design',
     'Solar Plant',
@@ -26,6 +40,7 @@ class ElectricityCalculator extends StatelessWidget {
     'Water Pump',
     // 'Net Metering',
   ];
+
   final List<Map<String, dynamic>> meteringName = [
   {"name": "Net Metering", 'subtitle': 'Required Internet to check', "image": Assets.metering.path,
   "url": "https://roshanpakistan.pk/net_metering/"},
@@ -52,9 +67,21 @@ class ElectricityCalculator extends StatelessWidget {
   ];
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    interstitialAdController.checkAndShowAdOnVisit();
+      bannerAdController.loadBannerAd('ad1');
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.kWhite,
+      bottomNavigationBar: Container(
+        width: double.infinity,
+        child: bannerAdController.getBannerAdWidget('ad1'), // Display the ad
+      ),
       appBar: PreferredSize(
         preferredSize: Size(0, 70),
         child: CustomAppBar(
@@ -69,8 +96,7 @@ class ElectricityCalculator extends StatelessWidget {
               size: 22,
             ),
           ),
-        ),
-      ),
+        ),),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: SingleChildScrollView(
@@ -94,20 +120,26 @@ class ElectricityCalculator extends StatelessWidget {
                   return CustomContainer(
                     ontap: () {
                       if (index == 0) {
+                          interstitialAdController.checkAndShowAdOnVisit();
                         Get.to(AppliancesScreen());
                       } else if(index == 3){
+                        interstitialAdController.checkAndShowAdOnVisit();
                         Get.to(BatteryLifeCalculator(
                           results: results,
                           title: namesTitle[index], // Pass the selected title
                         ));
                       } else if(index == 1){
+                        interstitialAdController.checkAndShowAdOnVisit();
                         Get.to(SolarCalculatorScreen());
                       }
                       else if(index == 2){
+                        interstitialAdController.checkAndShowAdOnVisit();
                         Get.to(SolarLoadView());
                       } else if(index == 4){
+                        interstitialAdController.checkAndShowAdOnVisit();
                         Get.to(AcSizeCalculatorScreen());
                       }else if(index == 5){
+                        interstitialAdController.checkAndShowAdOnVisit();
                         Get.to(WaterPumpCalculator());
                       }
                     },
@@ -140,25 +172,7 @@ class ElectricityCalculator extends StatelessWidget {
                 },
               ),
             CustomContainer(
-              // ontap: () {
-              //   if (index == 0) {
-              //     Get.to(AppliancesScreen());
-              //   } else if(index == 3){
-              //     Get.to(BatteryLifeCalculator(
-              //       results: results,
-              //       title: namesTitle[index], // Pass the selected title
-              //     ));
-              //   } else if(index == 1){
-              //     Get.to(SolarCalculatorScreen());
-              //   }
-              //   else if(index == 2){
-              //     Get.to(SolarLoadView());
-              //   } else if(index == 4){
-              //     Get.to(AcSizeCalculatorScreen());
-              //   }else if(index == 5){
-              //     Get.to(WaterPumpCalculator());
-              //   }
-              // },
+
               margin: EdgeInsets.symmetric(vertical: 10),
               borderRadius: BorderRadius.circular(16),
               bgColor: AppColors.kDarkGreen1,
@@ -167,7 +181,11 @@ class ElectricityCalculator extends StatelessWidget {
               child: ListTile(
                 dense: true,
                 onTap: () {
-                  Get.to(() => WebViewScreen(url: meteringName[0]["url"], companyName: meteringName[0]['name']));
+                  interstitialAdController.checkAndShowAdOnVisit();
+                  Get.to(() => NetMeteringScreen(
+                      url: meteringName[0]["url"],
+                      companyName: meteringName[0]['name']),
+                  );
                 },
                 leading: Image.asset(Assets.metering.path, scale: 18),
                 title: regularTextWidget(
@@ -198,3 +216,71 @@ class ElectricityCalculator extends StatelessWidget {
 }
 
 
+class NetMeteringScreen extends StatefulWidget {
+  final String url;
+  final String companyName;
+
+  const NetMeteringScreen({super.key, required this.url, required this.companyName});
+
+  @override
+  State<NetMeteringScreen> createState() => _NetMeteringScreenState();
+}
+
+class _NetMeteringScreenState extends State<NetMeteringScreen> {
+  late final WebViewController controller;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (url) {
+            setState(() {
+              isLoading = true;
+            });
+          },
+          onPageFinished: (url) {
+            setState(() {
+              isLoading = false;
+            });
+          },
+          onNavigationRequest: (request) {
+            if (request.url.startsWith('https://roshanpakistan.pk/net_metering/')) {
+              return NavigationDecision.prevent;
+            }
+            return NavigationDecision.navigate;
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(widget.url));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.kWhite,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(70),
+        child: CustomAppBar(
+          title:  widget.companyName.toUpperCase(),
+          leading: IconButton(
+            onPressed: () => Get.back(),
+            icon: Icon(Icons.arrow_back_ios, color: AppColors.kWhite, size: 22),
+          ),
+        ),
+      ),
+      body: Stack(
+        children: [
+          WebViewWidget(controller: controller),
+          if (isLoading)
+            const Center(
+              child: CircularProgressIndicator(),
+            ),
+        ],
+      ),
+    );
+  }
+}
