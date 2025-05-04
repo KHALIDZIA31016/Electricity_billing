@@ -1,11 +1,9 @@
 import 'dart:convert';
-
 import 'package:electricity_app/extensions/size_box.dart';
 import 'package:electricity_app/presentations/electricity_calculator/view/show_result_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../../ads_manager/interstitial_ads.dart';
 import '../../../core/themes/app_color.dart';
 import '../../../core/widgets/custom_appBar.dart';

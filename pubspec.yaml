@@ -26,6 +26,8 @@ dependencies:
   shimmer: ^3.0.0
   connectivity_plus: ^6.1.4
   url_launcher: ^6.3.1
+  geolocator: ^14.0.0
+  weather: ^3.2.1
 #  enhance_stepper: ^1.0.2
 #  tuple: ^2.0.2
 

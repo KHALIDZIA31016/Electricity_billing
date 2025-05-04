@@ -21,17 +21,17 @@ class NeumorphicButton extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         decoration: BoxDecoration(
-          color: Color(0xFFE0E0E0),
+          color: Colors.grey.shade200,
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.shade500,
-              offset: Offset(0, 0),
-              blurRadius: 7,
-              spreadRadius: 1,
+              color: Colors.grey.shade400,
+              offset: Offset(-2, 0),
+              blurRadius: 10,
+              spreadRadius: 7,
             ),
             BoxShadow(
-              color:AppColors.kWhiteFA.withOpacity(0.2),
+              color:Colors.grey.shade300,
               offset: Offset(-6, -6),
               blurRadius: 0.5,
               spreadRadius: 1,

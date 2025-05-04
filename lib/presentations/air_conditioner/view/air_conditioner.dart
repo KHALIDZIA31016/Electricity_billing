@@ -14,23 +14,48 @@ class AcSizeCalculatorScreen extends StatefulWidget {
 }
 
 class _AcSizeCalculatorScreenState extends State<AcSizeCalculatorScreen> {
-
-
   final BannerAdController bannerAdController = Get.find<BannerAdController>();
   final interstitialAdController = Get.find<InterstitialAdController>();
 
   final TextEditingController roomLengthController = TextEditingController();
   final TextEditingController roomWidthController = TextEditingController();
-  final TextEditingController roomHeightController = TextEditingController();
-  final TextEditingController numberOfPersonsController = TextEditingController();
+  final TextEditingController roomHeightController = TextEditingController(text: '');
+  final TextEditingController numberOfPersonsController = TextEditingController(text: '');
 
+  final List<String> temperatureOptions = [
+    '20°C',
+    '25°C',
+    '30°C',
+    '35°C',
+    '40°C',
+    '45°C',
+    '50°C',
+    '55°C',
+    '60°C'
+  ];
+
+  String selectedTemperature = '20°C';
+
+  final List<String> unitOptions = ['ft', 'm', 'cm'];
   String selectedLengthUnit = 'ft';
   String selectedWidthUnit = 'ft';
   String selectedHeightUnit = 'ft';
 
-  final List<String> unitOptions = ['ft', 'm', 'cm'];
 
   String result = '';
+
+  // Mapping temperature options to adjustment factors
+  final Map<String, double> temperatureAdjustmentFactors = {
+    '20°C': 1.00,
+    '25°C': 1.10,
+    '30°C': 1.20,
+    '35°C': 1.30,
+    '40°C': 1.40,
+    '45°C': 1.50,
+    '50°C': 1.60,
+    '55°C': 1.70,
+    '60°C': 1.80,
+  };
 
   void calculateACSize() {
     double length = double.tryParse(roomLengthController.text) ?? 0;
@@ -38,13 +63,25 @@ class _AcSizeCalculatorScreenState extends State<AcSizeCalculatorScreen> {
     double height = double.tryParse(roomHeightController.text) ?? 0;
     int persons = int.tryParse(numberOfPersonsController.text) ?? 0;
 
+    // Convert all units to feet for calculation
+    if (selectedLengthUnit == 'm') length *= 3.28084;
+    if (selectedLengthUnit == 'cm') length *= 0.0328084;
+    if (selectedWidthUnit == 'm') width *= 3.28084;
+    if (selectedWidthUnit == 'cm') width *= 0.0328084;
+    if (selectedHeightUnit == 'm') height *= 3.28084;
+    if (selectedHeightUnit == 'cm') height *= 0.0328084;
+
     double volume = length * width * height;
     double baseBTU = volume * 5;
-
-    // Add 600 BTU per person
     double totalBTU = baseBTU + (persons * 600);
 
-    double tons = totalBTU / 12000;
+    // Get adjustment factor based on selected temperature
+    double tempFactor = temperatureAdjustmentFactors[selectedTemperature] ?? 1.0;
+
+    // Adjust the BTU based on temperature
+    double adjustedBTU = totalBTU * tempFactor;
+
+    double tons = adjustedBTU / 12000;
 
     setState(() {
       result = '${tons.toStringAsFixed(2)} ton';
@@ -54,14 +91,21 @@ class _AcSizeCalculatorScreenState extends State<AcSizeCalculatorScreen> {
   void resetFields() {
     roomLengthController.clear();
     roomWidthController.clear();
-    roomHeightController.text = '8';
-    numberOfPersonsController.text = '1';
+    numberOfPersonsController.clear();
+    roomHeightController.clear();
+    selectedTemperature = '20°C';
+    selectedLengthUnit = 'ft';
+    selectedWidthUnit = 'ft';
+    selectedHeightUnit = 'ft';
+
     setState(() {
       result = '';
     });
   }
 
-  Widget buildTextField(String label, TextEditingController controller, String selectedUnit, void Function(String?) onChanged) {
+  Widget buildTextField(
+      String label, TextEditingController controller,
+      String selectedUnit, void Function(String?) onChanged) {
     return Row(
       children: [
         Expanded(
@@ -75,9 +119,9 @@ class _AcSizeCalculatorScreenState extends State<AcSizeCalculatorScreen> {
                 isDense: true,
                 hintText: label,
                 filled: true,
-                fillColor: Colors.grey.shade300,
+                fillColor: Colors.grey.shade100,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10)
+                    borderRadius: BorderRadius.circular(10)
                 ),
               ),
             ),
@@ -111,12 +155,14 @@ class _AcSizeCalculatorScreenState extends State<AcSizeCalculatorScreen> {
       ],
     );
   }
+
   @override
   void initState() {
     super.initState();
     bannerAdController.loadBannerAd('ad5');
     interstitialAdController.checkAndShowAdOnVisit();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -124,11 +170,9 @@ class _AcSizeCalculatorScreenState extends State<AcSizeCalculatorScreen> {
       appBar: PreferredSize(
         preferredSize: Size(0, 70),
         child: CustomAppBar(
-          title: 'AC size Calculator',
+          title: 'AC Size Calculator',
           leading: IconButton(
-            onPressed: () {
-              Get.back();
-            },
+            onPressed: () => Get.back(),
             icon: Icon(
               Icons.arrow_back_ios,
               color: AppColors.kWhite,
@@ -139,102 +183,152 @@ class _AcSizeCalculatorScreenState extends State<AcSizeCalculatorScreen> {
       ),
       bottomNavigationBar: Container(
         width: double.infinity,
-        child: bannerAdController.getBannerAdWidget('ad5'), // Display the ad
+        child: bannerAdController.getBannerAdWidget('ad5'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
           child: Column(
-            spacing: 8,
             children: [
-
               CustomContainer(
-                height: 80,
+                height: 60,
                 width: double.infinity,
-                padding: EdgeInsets.all(12),
-                bgColor: AppColors.kDarkGreen1.withValues(alpha: .084),
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                bgColor: Colors.grey.shade200,
                 borderRadius: BorderRadius.circular(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Temperature:', style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.w600)),
-                    Center(child: Text('50°C', style: TextStyle(fontSize: 16, color: Colors.blue, fontWeight: FontWeight.w600))),
+                    Text('Temperature:',
+                        style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600
+                        )
+                    ),
+                    DropdownButton<String>(
+                      value: selectedTemperature,
+                      icon: Icon(Icons.arrow_drop_down, color: Colors.black),
+                      iconSize: 24,
+                      dropdownColor: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600
+                      ),
+                      underline: Container(height: 0),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedTemperature = newValue!;
+                        });
+                      },
+                      items: temperatureOptions.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value, style: TextStyle(color: Colors.black)),
+                        );
+                      }).toList(),
+                    ),
                   ],
                 ),
               ),
+              SizedBox(height: 20),
               Text(
-                'Required Data :',
+                'Required Data:',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
+              SizedBox(height: 10),
               buildTextField('Room Length', roomLengthController, selectedLengthUnit,
                       (value) => setState(() => selectedLengthUnit = value!)),
               buildTextField('Room Width', roomWidthController, selectedWidthUnit,
                       (value) => setState(() => selectedWidthUnit = value!)),
-              buildTextField('Room height', roomHeightController, selectedHeightUnit,
+              buildTextField('Room Height', roomHeightController, selectedHeightUnit,
                       (value) => setState(() => selectedHeightUnit = value!)),
+              SizedBox(height: 10),
               TextField(
                 controller: numberOfPersonsController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: 'Number Of Persons',
                   filled: true,
-                  fillColor: Colors.grey.shade200,
+                  fillColor: Colors.grey.shade100,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10)
+                      borderRadius: BorderRadius.circular(10)
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-
-             Row(
-               spacing: 20,
-               children: [
-                 SizedBox(
-                   height: 46,
-                   child: ElevatedButton(
-                     style: ButtonStyle(
-                         backgroundColor: WidgetStatePropertyAll(
-                             AppColors.kDarkGreen1.withValues(alpha: .43)),
-                         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                             RoundedRectangleBorder(
-                               borderRadius: BorderRadius.circular(8.0), // Adjust this value
-                             ))),
-                     onPressed: calculateACSize,
-                     child: regularTextWidget(textTitle: 'Calculate Power', textSize: 16, textColor: AppColors.kWhite),
-                   ),
-                 ),
-                 SizedBox(
-                   height: 46,
-                   child: ElevatedButton(
-                     style: ButtonStyle(
-                         backgroundColor: WidgetStatePropertyAll(AppColors.kDarkLighter.withValues(alpha: .08)),
-                         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                             RoundedRectangleBorder(
-                               borderRadius: BorderRadius.circular(8.0), // Adjust this value
-                             ))),
-                     onPressed: resetFields,
-                     child: regularTextWidget(textTitle: 'Reset Fields', textSize: 16, textColor: AppColors.kWhite),
-                   ),
-                 ),
-               ],
-             ),
-
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SizedBox(
+                    width: 150,
+                    height: 46,
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStatePropertyAll(
+                              AppColors.kDarkGreen1),
+                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ))),
+                      onPressed: calculateACSize,
+                      child: regularTextWidget(
+                          textTitle: 'Calculate',
+                          textSize: 16,
+                          textColor: AppColors.kWhite),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 150,
+                    height: 46,
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStatePropertyAll(
+                              Colors.grey.shade200),
+                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ))),
+                      onPressed: resetFields,
+                      child: regularTextWidget(
+                          textTitle: 'Reset',
+                          textSize: 16,
+                          textColor: AppColors.kBlack),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
               CustomContainer(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
-                bgColor: AppColors.kDarkGreen1.withValues(alpha: .84),
+                bgColor: AppColors.kDarkGreen1,
                 borderRadius: BorderRadius.circular(10),
                 child: Column(
                   children: [
-                    const Text(
-                      '(AC Size) Air Conditioner Size',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    const SizedBox(height: 8),
                     Text(
-                      result.isEmpty ? 'Result Will Show Here' : result,
-                      style: const TextStyle(color: Colors.black, fontSize: 18),
+                      'Recommended AC Size',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      result.isEmpty ? '0.0 ton' : result,
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      'Temperature is set to:  $selectedTemperature',
+                      style: TextStyle(
+                          color: Colors.amber,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),

@@ -101,11 +101,11 @@ class _WaterPumpCalculatorState extends State<WaterPumpCalculator> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-           Image.asset(Assets.pump.path,width: 10,height: 100,),
+           Image.asset(Assets.pump.path,width: 20,height: 140,),
 
             const Text(
               'Required Data :',
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16.0),
@@ -115,7 +115,7 @@ class _WaterPumpCalculatorState extends State<WaterPumpCalculator> {
                   child: CustomContainer(
                     height: 50,
                     width: 100,
-                    bgColor: AppColors.kDarkLighter.withValues(alpha: .26),
+                    bgColor: AppColors.kDarkLighter.withValues(alpha: .08),
                     borderRadius: BorderRadius.circular(10),
                     child: TextFormField(
                       style: TextStyle(color: Colors.black),
@@ -124,6 +124,7 @@ class _WaterPumpCalculatorState extends State<WaterPumpCalculator> {
                       keyboardType: TextInputType.number,
                       decoration:  InputDecoration(
                         hintText: 'Discharge Value',
+                        hintStyle: TextStyle(color: Colors.grey),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10)
                         ),
@@ -137,9 +138,9 @@ class _WaterPumpCalculatorState extends State<WaterPumpCalculator> {
                   child: CustomContainer(
                       height: 50,
                       width: 100,
-                      bgColor: AppColors.kDarkLighter.withValues(alpha: .26),
+                      bgColor: AppColors.kDarkLighter.withValues(alpha: .08),
                       borderRadius: BorderRadius.circular(10),
-                      child: Center(child: Text('gallon/min'))),
+                      child: Center(child: Text('gallon/min', style: TextStyle(color: Colors.blue),))),
                 ),
               ],
             ),
@@ -150,7 +151,7 @@ class _WaterPumpCalculatorState extends State<WaterPumpCalculator> {
                   child: CustomContainer(
                     height: 50,
                     width: 100,
-                    bgColor: AppColors.kDarkLighter.withValues(alpha: .26),
+                    bgColor: AppColors.kDarkLighter.withValues(alpha: .08),
                     borderRadius: BorderRadius.circular(10),
                     child: TextFormField(
                       style: TextStyle(color: Colors.black),
@@ -158,6 +159,7 @@ class _WaterPumpCalculatorState extends State<WaterPumpCalculator> {
                       keyboardType: TextInputType.number,
                       decoration:  InputDecoration(
                         hintText: 'Differential Head Size',
+                        hintStyle: TextStyle(color: Colors.grey),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -171,15 +173,15 @@ class _WaterPumpCalculatorState extends State<WaterPumpCalculator> {
                   child: CustomContainer(
                       height: 50,
                       width: 100,
-                      bgColor: AppColors.kDarkLighter.withValues(alpha: .26),
+                      bgColor: AppColors.kDarkLighter.withValues(alpha: .08),
                       borderRadius: BorderRadius.circular(10),
-                      child: Center(child: Text('ft'))),
+                      child: Center(child: Text('ft', style: TextStyle(color: Colors.blue),))),
                 ),
               ],
             ),
-            const SizedBox(height: 24.0),
+            const SizedBox(height: 40.0),
               SizedBox(
-                height: 46,
+                height: 56,
                 child: ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor: WidgetStatePropertyAll(AppColors.kDarkGreen1),
@@ -192,22 +194,23 @@ class _WaterPumpCalculatorState extends State<WaterPumpCalculator> {
                 ),
               ),
 
-            const SizedBox(height: 40.0),
-            regularTextWidget(textTitle: 'Result: ', textSize: 22, textColor: AppColors.kBlack),
+            const SizedBox(height: 50.0),
+            regularTextWidget(textTitle: 'Result: ', textSize: 22, textColor: AppColors.kBlack, fontWeight: FontWeight.w600),
             CustomContainer(
+              height: 100,
               padding: const EdgeInsets.all(16.0),
-              bgColor: Colors.blue[100],
+              bgColor: Colors.blue[400],
               borderRadius: BorderRadius.circular(10),
-              child: Row(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   const Text(
                     'Water Pump Horsepower',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 16),
                   ),
                   Text(
                     '${_horsepower.toStringAsFixed(2)} hp',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
                   ),
                 ],
               ),

@@ -34,7 +34,7 @@ class _ElectricityCalculatorState extends State<ElectricityCalculator> {
   final List<String> namesTitle = [
     'Home Generator Design',
     'Solar Plant',
-    'Required Solar',
+    // 'Required Solar',
     'Battery Life',
     'Air Conditioner Size',
     'Water Pump',
@@ -49,7 +49,7 @@ class _ElectricityCalculatorState extends State<ElectricityCalculator> {
   final List<String> subTitle = [
     '17 appliances record',
     'Required data to calculate',
-    'Required data to calculate',
+    // 'Required data to calculate',
     'Required data to calculate',
     'Required data to calculate',
     'Required data to calculate',
@@ -59,7 +59,7 @@ class _ElectricityCalculatorState extends State<ElectricityCalculator> {
   final List<String> images = [
     Assets.generator.path,
     Assets.solarEnergy.path,
-    Assets.solarEnergy.path,
+    // Assets.solarEnergy.path,
     Assets.battery.path,
     Assets.ac.path,
     Assets.pump.path,
@@ -124,21 +124,18 @@ class _ElectricityCalculatorState extends State<ElectricityCalculator> {
                         Get.to(AppliancesScreen());
                       } else if(index == 3){
                         interstitialAdController.checkAndShowAdOnVisit();
-                        Get.to(BatteryLifeCalculator(
-                          results: results,
-                          title: namesTitle[index], // Pass the selected title
-                        ));
+                        Get.to(AcSizeCalculatorScreen());
                       } else if(index == 1){
                         interstitialAdController.checkAndShowAdOnVisit();
                         Get.to(SolarCalculatorScreen());
                       }
                       else if(index == 2){
                         interstitialAdController.checkAndShowAdOnVisit();
-                        Get.to(SolarLoadView());
+                        Get.to(BatteryLifeCalculator(
+                          results: results,
+                          title: namesTitle[index], // Pass the selected title
+                        ));
                       } else if(index == 4){
-                        interstitialAdController.checkAndShowAdOnVisit();
-                        Get.to(AcSizeCalculatorScreen());
-                      }else if(index == 5){
                         interstitialAdController.checkAndShowAdOnVisit();
                         Get.to(WaterPumpCalculator());
                       }

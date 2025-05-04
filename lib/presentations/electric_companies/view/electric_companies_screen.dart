@@ -34,19 +34,17 @@ class _ElectricCompaniesScreenState extends State<ElectricCompaniesScreen> {
       "image": Assets.iesco.path,
       "url": "https://bill.pitc.com.pk/iescobill",
     },
-
-    {
-      "name": "SEPCO",
-      'location': 'Sukkur',
-      "image": Assets.sepco.path,
-      "url": "https://bill.pitc.com.pk/sepcobill",
-    },
-
     {
       "name": "LESCO",
       'location': 'Lahore',
       "image": Assets.lesco.path,
       "url": "https://bill.pitc.com.pk/lescobill",
+    },
+    {
+      "name": "GEPCO",
+      'location': 'Gujranwala',
+      "image": Assets.gepco.path,
+      "url": "https://bill.pitc.com.pk/gepcobill",
     },
 
     {
@@ -55,12 +53,42 @@ class _ElectricCompaniesScreenState extends State<ElectricCompaniesScreen> {
       "image": Assets.pesco.path,
       "url": "https://bill.pitc.com.pk/pescobill",
     },
-
+    {
+      "name": "FESCO",
+      'location': 'Faisalabad',
+      "image": Assets.fesco.path,
+      "url": "https://bill.pitc.com.pk/fescobill",
+    },
     {
       "name": "QESCO",
       'location': 'Quetta',
       "image": Assets.qesco.path,
       "url": "https://bill.pitc.com.pk/qescobill",
+    },
+    {
+      "name": "MEPCO",
+      'location': 'Multan',
+      "image": Assets.mepco.path,
+      "url": "https://bill.pitc.com.pk/mepcobill",
+    },
+    {
+      "name": "HESCO",
+      'location': 'Hyderabad ',
+      "image": Assets.hesco.path,
+      "url": "https://bill.pitc.com.pk/hescobill",
+    },
+
+    {
+      "name": "K-ELECTRIC",
+      'location': 'Karachi',
+      "image": Assets.kelectric.path,
+      "url": "https://staging.ke.com.pk:24555/",
+    },
+    {
+      "name": "SEPCO",
+      'location': 'Sukkur',
+      "image": Assets.sepco.path,
+      "url": "https://bill.pitc.com.pk/sepcobill",
     },
 
     {
@@ -70,46 +98,12 @@ class _ElectricCompaniesScreenState extends State<ElectricCompaniesScreen> {
       "url": "https://bill.pitc.com.pk/tescobill",
     },
 
-    {
-      "name": "GEPCO",
-      'location': 'Gujranwala',
-      "image": Assets.gepco.path,
-      "url": "https://bill.pitc.com.pk/gepcobill",
-    },
 
-    {
-      "name": "FESCO",
-      'location': 'Faisalabad',
-      "image": Assets.fesco.path,
-      "url": "https://bill.pitc.com.pk/fescobill",
-    },
 
-    {
-      "name": "MEPCO",
-      'location': 'Faisalabad',
-      "image": Assets.mepco.path,
-      "url": "https://bill.pitc.com.pk/mepcobill",
-    },
-
-    {
-      "name": "HESCO",
-      'location': 'Faisalabad',
-      "image": Assets.hesco.path,
-      "url": "https://bill.pitc.com.pk/hescobill",
-
-    },
-
-    {
-      "name": "K-ELECTRIC",
-      'location': 'Karachi',
-      "image": Assets.kelectric.path,
-      "url": "https://staging.ke.com.pk:24555/",
-    },
   ];
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     interstitialAdController.checkAndShowAdOnVisit();
     bannerAdController.loadBannerAd('ad4');
@@ -131,7 +125,7 @@ class _ElectricCompaniesScreenState extends State<ElectricCompaniesScreen> {
       ),
       bottomNavigationBar: Container(
         width: double.infinity,
-        child: bannerAdController.getBannerAdWidget('ad4'), // Display the ad
+        child: bannerAdController.getBannerAdWidget('ad4'),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -209,27 +203,25 @@ class ReferenceNumberScreen extends StatefulWidget {
   final String url;
   final String companyName;
 
-  const ReferenceNumberScreen({
-    super.key,
-    required this.url,
-    required this.companyName
-  });
+  const ReferenceNumberScreen({super.key, required this.url, required this.companyName});
 
   @override
   State<ReferenceNumberScreen> createState() => _ReferenceNumberScreenState();
 }
 
 class _ReferenceNumberScreenState extends State<ReferenceNumberScreen> {
+  final BannerAdController bannerAdController = Get.find<BannerAdController>();
+
   late final WebViewController controller;
   bool isLoading = true;
-  String? referenceNumber;
   TextEditingController refController = TextEditingController();
-  List<String> savedReferences = []; // List to store all saved references
+  List<String> savedReferences = [];
 
   @override
   void initState() {
     super.initState();
-    _loadSavedReferenceNumbers(); // Load all saved references
+    _loadSavedReferences();
+    bannerAdController.loadBannerAd('ad5');
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
@@ -245,58 +237,71 @@ class _ReferenceNumberScreenState extends State<ReferenceNumberScreen> {
       );
   }
 
-  // Load all saved reference numbers for this company
-  Future<void> _loadSavedReferenceNumbers() async {
+  Future<void> _loadSavedReferences() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      // Get the current reference number
-      referenceNumber = prefs.getString('ref_${widget.companyName}') ?? '';
-      refController.text = referenceNumber!;
-
-      // Get all saved references for this company
       savedReferences = prefs.getStringList('refs_${widget.companyName}') ?? [];
-      if (referenceNumber!.isNotEmpty && !savedReferences.contains(referenceNumber)) {
-        savedReferences.add(referenceNumber!);
-      }
     });
   }
-
-  // Save reference number and add to list
   Future<void> _saveReferenceNumber(String ref) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('ref_${widget.companyName}', ref);
+    if (ref.isEmpty) {
+      Get.snackbar(
+        'Error',
+        'Please enter a reference number',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    }
 
-    // Add to saved references list if not already there
+    // Validate reference number length
+    if (ref.length != 14) {
+      Get.snackbar(
+        'Error',
+        'Reference length must be exactly 14 digits',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    final prefs = await SharedPreferences.getInstance();
     if (!savedReferences.contains(ref)) {
       setState(() {
         savedReferences.add(ref);
       });
       await prefs.setStringList('refs_${widget.companyName}', savedReferences);
+      Get.snackbar(
+        'Success',
+        'Reference number saved',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    } else {
+      Get.snackbar(
+        'Info',
+        'Reference number already exists',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.blue,
+        colorText: Colors.white,
+      );
     }
   }
-
-  // Remove a reference number from saved list
   Future<void> _removeReferenceNumber(String ref) async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       savedReferences.remove(ref);
     });
     await prefs.setStringList('refs_${widget.companyName}', savedReferences);
-
-    // If we're removing the current reference, clear the text field
-    if (refController.text == ref) {
-      setState(() {
-        refController.text = '';
-      });
-      await prefs.remove('ref_${widget.companyName}');
-    }
   }
 
   Future<void> _injectReferenceNumber() async {
     final ref = refController.text.trim();
     if (ref.isEmpty) return;
 
-    // Wait an extra delay to ensure the page is fully ready
     await Future.delayed(const Duration(milliseconds: 500));
 
     await controller.runJavaScript('''
@@ -323,7 +328,6 @@ class _ReferenceNumberScreenState extends State<ReferenceNumberScreen> {
             input.value = "$ref";
             foundInput = true;
 
-            // Try to find the matching submit or search button
             const buttons = document.querySelectorAll('button, input[type="submit"], input[type="button"]');
             for (let btn of buttons) {
               const txt = (btn.innerText || btn.value || '').toLowerCase();
@@ -361,7 +365,6 @@ class _ReferenceNumberScreenState extends State<ReferenceNumberScreen> {
         }
       }
 
-      // Wait until DOM is stable
       if (document.readyState === 'complete') {
         tryInjectAndSearch();
       } else {
@@ -370,6 +373,7 @@ class _ReferenceNumberScreenState extends State<ReferenceNumberScreen> {
     })();
   ''');
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -377,642 +381,226 @@ class _ReferenceNumberScreenState extends State<ReferenceNumberScreen> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(70),
         child: CustomAppBar(
-          title: widget.companyName.toUpperCase(),
+          title: '${widget.companyName.toUpperCase()} Online Bill',
           leading: IconButton(
             onPressed: () => Get.back(),
             icon: Icon(Icons.arrow_back_ios, color: AppColors.kWhite, size: 22),
           ),
         ),
       ),
+      bottomNavigationBar: Container(
+        width: double.infinity,
+        child: bannerAdController.getBannerAdWidget('ad5'), // Display the ad
+      ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(26.0),
-            child: TextFormField(
-              controller: refController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Enter Reference Number',
-                labelStyle: const TextStyle(color: Colors.grey),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-              ),
+            padding: const EdgeInsets.all(8.0),
+            child: regularTextWidget(
+              textTitle: 'Enter your Reference Number here to check your electricity bill online',
+              textSize: 18,
+              textColor: Colors.black,
             ),
           ),
-          CustomContainer(
-            ontap: () async {
-              final ref = refController.text.trim();
-              if (ref.isNotEmpty) {
-                await _saveReferenceNumber(ref);
-                controller.loadRequest(Uri.parse(widget.url));
-
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => Scaffold(
-                      appBar: PreferredSize(
-                    preferredSize: const Size.fromHeight(70),
-                    child: CustomAppBar(
-                      title: ' ${widget.companyName.toUpperCase()} Bill',
-                      leading: IconButton(
-                        onPressed: () => Get.back(),
-                        icon: Icon(Icons.arrow_back_ios, color: AppColors.kWhite, size: 22),
-                      ),
-                    ),
+          10.asHeight,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              SizedBox(
+                width: 200,
+                child: TextFormField(
+                  controller: refController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Enter Reference Number',
+                    labelStyle: const TextStyle(color: Colors.grey),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                   ),
-                      body: Stack(
-                        children: [
-                          WebViewWidget(controller: controller),
-
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }
-            },
-            height: 46,
-            width: 180,
-            bgColor: AppColors.kDarkGreen1,
-            borderRadius: BorderRadius.circular(10),
-            child: Center(
-              child: regularTextWidget(
-                textTitle: 'Search Bill',
-                textSize: 18,
-                textColor: Colors.white,
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-          Divider(color: AppColors.kDarkGreen1,thickness: 2, indent: 40, endIndent: 40,),
-          const SizedBox(height: 60),
-          CustomContainer(
-            height: 50,
-            width: double.infinity,
-            ontap: () {
-              Get.to(() => SavedReferencesScreen(companyName: widget.companyName));
-            },
-            margin: EdgeInsets.symmetric(horizontal: 20),
-            bgColor: AppColors.kDarkGreen1,
-            borderRadius: BorderRadius.circular(10),
-            child: Center(
-              child: Text(
-                'Saved Reference Numbers',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.kWhite,
                 ),
               ),
-            ),
+              CustomContainer(
+                ontap: () async {
+                  final ref = refController.text.trim();
+                  if (ref.isNotEmpty) {
+                    controller.loadRequest(Uri.parse(widget.url));
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => Scaffold(
+                      appBar: PreferredSize(
+                        preferredSize: const Size.fromHeight(70),
+                        child: CustomAppBar(
+                          title: ' ${widget.companyName.toUpperCase()} Bill',
+                          leading: IconButton(
+                            onPressed: () => Get.back(),
+                            icon: Icon(Icons.arrow_back_ios, color: AppColors.kWhite, size: 22),
+                          ),
+                        ),
+                      ),
+                      body: Stack(children: [
+                        WebViewWidget(controller: controller),
+                      ]),
+                    )));
+                  } else {
+                    Get.snackbar(
+                      'Error',
+                      'Please enter a reference number',
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.red,
+                      colorText: Colors.white,
+                    );
+                  }
+                },
+                height: 46,
+                width: 120,
+                bgColor: AppColors.kDarkGreen1,
+                borderRadius: BorderRadius.circular(10),
+                child: Center(
+                  child: regularTextWidget(
+                    textTitle: 'Search Bill',
+                    textSize: 18,
+                    textColor: Colors.white,
+                  ),
+                ),
+              ),
+            ],
           ),
-
+          const SizedBox(height: 20),
+          Divider(color: AppColors.kDarkGreen1, thickness: 2, indent: 40, endIndent: 40),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              CustomContainer(
+                height: 40,
+                width: 160,
+                ontap: () async {
+                  final ref = refController.text.trim();
+                  if (ref.isNotEmpty) {
+                    await  _saveReferenceNumber(refController.text.trim());
+                  } else {
+                    Get.snackbar(
+                      'Error',
+                      'Please enter a reference number',
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.red,
+                      colorText: Colors.white,
+                    );
+                  }
+                },
+                bgColor: AppColors.kDarkGreen1,
+                borderRadius: BorderRadius.circular(10),
+                child: Center(
+                  child: regularTextWidget(
+                      textTitle: 'Save Ref No',
+                      textSize: 18,
+                      textColor: Colors.white
+                  ),
+                ),
+              ),
+              CustomContainer(
+                height: 40,
+                width: 160,
+                ontap: () {
+                  if (savedReferences.isNotEmpty) {
+                    Get.bottomSheet(
+                      StatefulBuilder(  // Wrap with StatefulBuilder to allow setState within the bottom sheet
+                        builder: (BuildContext context, StateSetter setModalState) {
+                          return Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Saved References',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.kDarkGreen1,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                Expanded(
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: savedReferences.length,
+                                    itemBuilder: (context, index) {
+                                      final ref = savedReferences[index];
+                                      return ListTile(
+                                          leading: CircleAvatar(
+                                          backgroundColor: AppColors.kDarkGreen1,
+                                          child: Text('${index + 1}', style: TextStyle(color: Colors.white))),
+                                      title: Text(ref),
+                                      trailing: IconButton(
+                                      icon: Icon(Icons.delete, color: Colors.red),
+                                      onPressed: () async {
+                                      await _removeReferenceNumber(ref);
+                                      setModalState(() {}); // Update the bottom sheet UI
+                                      if (savedReferences.isEmpty) {
+                                      Get.back(); // Close bottom sheet if no references left
+                                      }
+                                      },
+                                      ),
+                                      onTap: () {
+                                      refController.text = ref;
+                                      Get.back();
+                                      },
+                                      );
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                CustomContainer(
+                                  ontap: () => Get.back(),
+                                  height: 40,
+                                  width: double.infinity,
+                                  bgColor: AppColors.kDarkGreen1,
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Center(
+                                    child: Text(
+                                      'Close',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.kWhite,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  } else {
+                    Get.snackbar(
+                      'Info',
+                      'No saved references found',
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.blue,
+                      colorText: Colors.white,
+                    );
+                  }
+                },
+                bgColor: AppColors.kDarkGreen1,
+                borderRadius: BorderRadius.circular(10),
+                child: Center(
+                  child: Text(
+                    'Choose Ref No',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.kWhite,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
 }
-
-class SavedReferencesScreen extends StatefulWidget {
-  final String companyName;
-
-  const SavedReferencesScreen({super.key, required this.companyName});
-
-  @override
-  State<SavedReferencesScreen> createState() => _SavedReferencesScreenState();
-}
-
-class _SavedReferencesScreenState extends State<SavedReferencesScreen> {
-  List<String> savedReferences = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadSavedReferences();
-  }
-
-  Future<void> _loadSavedReferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      savedReferences = prefs.getStringList('refs_${widget.companyName}') ?? [];
-    });
-  }
-
-  Future<void> _removeReference(String ref) async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      savedReferences.remove(ref);
-    });
-    await prefs.setStringList('refs_${widget.companyName}', savedReferences);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(70),
-        child: CustomAppBar(
-          title: 'Saved References',
-          leading: IconButton(
-            onPressed: () => Get.back(),
-            icon: Icon(Icons.arrow_back_ios, color: AppColors.kWhite, size: 22),
-          ),
-        ),
-      ),
-      body: ListView.builder(
-        itemCount: savedReferences.length,
-        itemBuilder: (context, index) {
-          final ref = savedReferences[index];
-          return CustomContainer(
-            height: 60,
-            width: double.infinity,
-            bgColor: Colors.grey.shade200,
-            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            borderRadius: BorderRadius.circular(10),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: Text('${index + 1}'),
-                ),
-                SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Reference Number:',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Text(ref, style: TextStyle(color: Colors.black)),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete, color: Colors.red),
-                  onPressed: () => _removeReference(ref),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-//
-// class ReferenceNumberScreen extends StatefulWidget {
-//   final String url;
-//   final String companyName;
-//
-//   const ReferenceNumberScreen({
-//     super.key,
-//     required this.url,
-//     required this.companyName
-//   });
-//
-//   @override
-//   State<ReferenceNumberScreen> createState() => _ReferenceNumberScreenState();
-// }
-//
-// class _ReferenceNumberScreenState extends State<ReferenceNumberScreen> {
-//   late final WebViewController controller;
-//   bool isLoading = true;
-//   String? referenceNumber;
-//   TextEditingController refController = TextEditingController();
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     _loadSavedReferenceNumber();
-//     controller = WebViewController()
-//       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-//       ..setNavigationDelegate(
-//         NavigationDelegate(
-//           onPageStarted: (url) {
-//             setState(() => isLoading = true);
-//           },
-//           onPageFinished: (url) {
-//             setState(() => isLoading = false);
-//             _injectReferenceNumber();
-//           },
-//         ),
-//       );
-//   }
-//
-//   // Modified to load reference number specific to this company
-//   Future<void> _loadSavedReferenceNumber() async {
-//     final prefs = await SharedPreferences.getInstance();
-//     setState(() {
-//       referenceNumber = prefs.getString('ref_${widget.companyName}') ?? '';
-//       refController.text = referenceNumber!;
-//     });
-//   }
-//
-//   // Modified to save reference number specific to this company
-//   Future<void> _saveReferenceNumber(String ref) async {
-//     final prefs = await SharedPreferences.getInstance();
-//     await prefs.setString('ref_${widget.companyName}', ref);
-//   }
-//
-//   Future<void> _injectReferenceNumber() async {
-//     final ref = refController.text.trim();
-//     if (ref.isNotEmpty) {
-//       await controller.runJavaScript('''
-//       // Function to trigger a click event
-//       function triggerClick(element) {
-//         const event = new MouseEvent('click', {
-//           view: window,
-//           bubbles: true,
-//           cancelable: true
-//         });
-//         element.dispatchEvent(event);
-//       }
-//
-//       // Try to find input fields that might be for reference number
-//       const inputs = document.getElementsByTagName('input');
-//       let foundInput = false;
-//
-//       for (let i = 0; i < inputs.length; i++) {
-//         const input = inputs[i];
-//         // Check for common attributes that might indicate a reference number field
-//         if (input.type === 'text' &&
-//             (input.name.includes('ref') ||
-//              input.id.includes('ref') ||
-//              input.placeholder.toLowerCase().includes('reference'))) {
-//           input.value = '$ref';
-//           foundInput = true;
-//
-//           // Try to find and click the search button
-//           setTimeout(() => {
-//             // Look for buttons that might be the search button
-//             const buttons = document.getElementsByTagName('button');
-//             for (let j = 0; j < buttons.length; j++) {
-//               const button = buttons[j];
-//               if (button.innerText.toLowerCase().includes('search') ||
-//                   button.innerText.toLowerCase().includes('submit') ||
-//                   button.id.includes('search') ||
-//                   button.name.includes('search')) {
-//                 triggerClick(button);
-//                 break;
-//               }
-//             }
-//
-//             // Also check input elements of type submit or button
-//             const submitInputs = document.querySelectorAll('input[type="submit"], input[type="button"]');
-//             for (let k = 0; k < submitInputs.length; k++) {
-//               const submitInput = submitInputs[k];
-//               if (submitInput.value.toLowerCase().includes('search') ||
-//                   submitInput.value.toLowerCase().includes('submit')) {
-//                 triggerClick(submitInput);
-//                 break;
-//               }
-//             }
-//           }, 500);
-//
-//           break;
-//         }
-//       }
-//
-//       // If we didn't find a specific input field, try to find any search form
-//       if (!foundInput) {
-//         setTimeout(() => {
-//           const forms = document.getElementsByTagName('form');
-//           for (let l = 0; l < forms.length; l++) {
-//             const form = forms[l];
-//             if (form.innerHTML.toLowerCase().includes('reference') ||
-//                 form.innerHTML.toLowerCase().includes('consumer') ||
-//                 form.innerHTML.toLowerCase().includes('account')) {
-//               const inputs = form.getElementsByTagName('input');
-//               for (let m = 0; m < inputs.length; m++) {
-//                 if (inputs[m].type === 'text') {
-//                   inputs[m].value = '$ref';
-//                   const submit = form.querySelector('button, input[type="submit"], input[type="button"]');
-//                   if (submit) {
-//                     triggerClick(submit);
-//                   }
-//                   break;
-//                 }
-//               }
-//               break;
-//             }
-//           }
-//         }, 500);
-//       }
-//     ''');
-//     }
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: PreferredSize(
-//         preferredSize: const Size.fromHeight(70),
-//         child: CustomAppBar(
-//           title: widget.companyName.toUpperCase(),
-//           leading: IconButton(
-//             onPressed: () => Get.back(),
-//             icon: Icon(Icons.arrow_back_ios, color: AppColors.kWhite, size: 22),
-//           ),
-//         ),
-//       ),
-//       body: Column(
-//         children: [
-//           Padding(
-//             padding: const EdgeInsets.all(26.0),
-//             child: TextFormField(
-//               controller: refController,
-//               keyboardType: TextInputType.number,
-//               decoration: InputDecoration(
-//                 labelText: 'Enter Reference Number',
-//                 labelStyle: const TextStyle(color: Colors.grey),
-//                 border: OutlineInputBorder(
-//                     borderRadius: BorderRadius.circular(10)),
-//               ),
-//             ),
-//           ),
-//           CustomContainer(
-//             ontap: () async {
-//               final ref = refController.text.trim();
-//               if (ref.isNotEmpty) {
-//                 await _saveReferenceNumber(ref);
-//                 controller.loadRequest(Uri.parse(widget.url));
-//
-//                 Navigator.push(
-//                   context,
-//                   MaterialPageRoute(
-//                     builder: (_) =>
-//                         Scaffold(
-//                           appBar: AppBar(title: Text('${widget
-//                               .companyName} Bill')),
-//                           body: Stack(
-//                             children: [
-//                               WebViewWidget(controller: controller),
-//                               if (isLoading)
-//                                 Center(child: CircularProgressIndicator()),
-//                             ],
-//                           ),
-//                         ),
-//                   ),
-//                 );
-//               }
-//             },
-//             height: 46,
-//             width: 180,
-//             bgColor: AppColors.kDarkGreen1,
-//             borderRadius: BorderRadius.circular(10),
-//             child: Center(
-//               child: regularTextWidget(
-//                 textTitle: 'Search Bill',
-//                 textSize: 18,
-//                 textColor: Colors.white,
-//               ),
-//             ),
-//           ),
-//
-//
-//           CustomContainer(
-//             margin: EdgeInsets.symmetric(vertical: 30),
-//             height: 50,
-//             width: 300,
-//             borderRadius: BorderRadius.circular(10),
-//             bgColor: AppColors.kDarkGreen1,
-//             child: Center(child: regularTextWidget(
-//                 textTitle: 'Choose Reference Number',
-//                 textSize: 16,
-//                 textColor: Colors.white)),
-//           ),
-//
-//
-//         ],
-//       ),
-//     );
-//   }
-// }
-
-
-
-
-//
-// class ReferenceNumberScreen extends StatefulWidget {
-//   final String url;
-//   final String companyName;
-//
-//   const ReferenceNumberScreen({
-//     super.key,
-//     required this.url,
-//     required this.companyName
-//   });
-//
-//   @override
-//   State<ReferenceNumberScreen> createState() => _ReferenceNumberScreenState();
-// }
-//
-// class _ReferenceNumberScreenState extends State<ReferenceNumberScreen> {
-//   late final WebViewController controller;
-//   bool isLoading = true;
-//   String? referenceNumber;
-//   TextEditingController refController = TextEditingController();
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     _loadSavedReferenceNumber();
-//     controller = WebViewController()
-//       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-//       ..setNavigationDelegate(
-//         NavigationDelegate(
-//           onPageStarted: (url) {
-//             setState(() => isLoading = true);
-//           },
-//           onPageFinished: (url) {
-//             setState(() => isLoading = false);
-//             // Inject JavaScript after page loads
-//             _injectReferenceNumber();
-//           },
-//         ),
-//       );
-//   }
-//
-//   Future<void> _loadSavedReferenceNumber() async {
-//     final prefs = await SharedPreferences.getInstance();
-//     setState(() {
-//       referenceNumber = prefs.getString('referenceNumber') ?? '';
-//       refController.text = referenceNumber!;
-//     });
-//   }
-//
-//   Future<void> _saveReferenceNumber(String ref) async {
-//     final prefs = await SharedPreferences.getInstance();
-//     await prefs.setString('referenceNumber', ref);
-//   }
-//
-//   Future<void> _injectReferenceNumber() async {
-//     final ref = refController.text.trim();
-//     if (ref.isNotEmpty) {
-//       await controller.runJavaScript('''
-//       // Function to trigger a click event
-//       function triggerClick(element) {
-//         const event = new MouseEvent('click', {
-//           view: window,
-//           bubbles: true,
-//           cancelable: true
-//         });
-//         element.dispatchEvent(event);
-//       }
-//
-//       // Try to find input fields that might be for reference number
-//       const inputs = document.getElementsByTagName('input');
-//       let foundInput = false;
-//
-//       for (let i = 0; i < inputs.length; i++) {
-//         const input = inputs[i];
-//         // Check for common attributes that might indicate a reference number field
-//         if (input.type === 'text' &&
-//             (input.name.includes('ref') ||
-//              input.id.includes('ref') ||
-//              input.placeholder.toLowerCase().includes('reference'))) {
-//           input.value = '$ref';
-//           foundInput = true;
-//
-//           // Try to find and click the search button
-//           setTimeout(() => {
-//             // Look for buttons that might be the search button
-//             const buttons = document.getElementsByTagName('button');
-//             for (let j = 0; j < buttons.length; j++) {
-//               const button = buttons[j];
-//               if (button.innerText.toLowerCase().includes('search') ||
-//                   button.innerText.toLowerCase().includes('submit') ||
-//                   button.id.includes('search') ||
-//                   button.name.includes('search')) {
-//                 triggerClick(button);
-//                 break;
-//               }
-//             }
-//
-//             // Also check input elements of type submit or button
-//             const submitInputs = document.querySelectorAll('input[type="submit"], input[type="button"]');
-//             for (let k = 0; k < submitInputs.length; k++) {
-//               const submitInput = submitInputs[k];
-//               if (submitInput.value.toLowerCase().includes('search') ||
-//                   submitInput.value.toLowerCase().includes('submit')) {
-//                 triggerClick(submitInput);
-//                 break;
-//               }
-//             }
-//           }, 500);
-//
-//           break;
-//         }
-//       }
-//
-//       // If we didn't find a specific input field, try to find any search form
-//       if (!foundInput) {
-//         setTimeout(() => {
-//           const forms = document.getElementsByTagName('form');
-//           for (let l = 0; l < forms.length; l++) {
-//             const form = forms[l];
-//             if (form.innerHTML.toLowerCase().includes('reference') ||
-//                 form.innerHTML.toLowerCase().includes('consumer') ||
-//                 form.innerHTML.toLowerCase().includes('account')) {
-//               const inputs = form.getElementsByTagName('input');
-//               for (let m = 0; m < inputs.length; m++) {
-//                 if (inputs[m].type === 'text') {
-//                   inputs[m].value = '$ref';
-//                   const submit = form.querySelector('button, input[type="submit"], input[type="button"]');
-//                   if (submit) {
-//                     triggerClick(submit);
-//                   }
-//                   break;
-//                 }
-//               }
-//               break;
-//             }
-//           }
-//         }, 500);
-//       }
-//     ''');
-//     }
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: PreferredSize(
-//         preferredSize: const Size.fromHeight(70),
-//         child: CustomAppBar(
-//           title: widget.companyName.toUpperCase(),
-//           leading: IconButton(
-//             onPressed: () => Get.back(),
-//             icon: Icon(Icons.arrow_back_ios, color: AppColors.kWhite, size: 22),
-//           ),
-//         ),
-//       ),
-//       body: Column(
-//         children: [
-//           Padding(
-//             padding: const EdgeInsets.all(26.0),
-//             child: TextFormField(
-//               controller: refController,
-//               keyboardType: TextInputType.number,
-//               decoration: InputDecoration(
-//                 labelText: 'Enter Reference Number',
-//                 labelStyle: const TextStyle(color: Colors.grey),
-//                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-//               ),
-//             ),
-//           ),
-//           CustomContainer(
-//             ontap: () async {
-//               final ref = refController.text.trim();
-//               if (ref.isNotEmpty) {
-//                 await _saveReferenceNumber(ref);
-//                 // Load the URL without parameters (some sites might not use them)
-//                 controller.loadRequest(Uri.parse(widget.url));
-//
-//                 Navigator.push(
-//                   context,
-//                   MaterialPageRoute(
-//                     builder: (_) => Scaffold(
-//                       appBar: AppBar(title: Text('${widget.companyName} Bill')),
-//                       body: Stack(
-//                         children: [
-//                           WebViewWidget(controller: controller),
-//                           // if (isLoading)
-//                             // Center(child: CircularProgressIndicator()),
-//                         ],
-//                       ),
-//                     ),
-//                   ),
-//                 );
-//               }
-//             },
-//             height: 46,
-//             width: 180,
-//             bgColor: AppColors.kDarkGreen1,
-//             borderRadius: BorderRadius.circular(10),
-//             child: Center(
-//               child: regularTextWidget(
-//                 textTitle: 'Search Bill',
-//                 textSize: 18,
-//                 textColor: Colors.white,
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
-
-
-
-

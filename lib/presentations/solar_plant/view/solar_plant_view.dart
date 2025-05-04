@@ -127,7 +127,7 @@ class _SolarCalculatorScreenState extends State<SolarCalculatorScreen> {
             children: [
               Image.asset(Assets.solarEnergy.path, scale: 6,),
               10.asHeight,
-              regularTextWidget(textTitle: 'Required Data', textSize: 22, textColor: AppColors.kDarker),
+              regularTextWidget(textTitle: 'Required Data', textSize: 24, textColor: AppColors.kDarker, fontWeight: FontWeight.w600),
               ...fields.asMap().entries.map((entry) {
                 int index = entry.key;
                 var field = entry.value;
@@ -143,8 +143,9 @@ class _SolarCalculatorScreenState extends State<SolarCalculatorScreen> {
                           decoration: InputDecoration(
                             isDense: true,
                             hintText: field['label'],
+                            hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
                             filled: true,
-                            fillColor: Colors.grey.shade300,
+                            fillColor: Colors.grey.shade200,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10)
                             ),
@@ -158,14 +159,14 @@ class _SolarCalculatorScreenState extends State<SolarCalculatorScreen> {
                           height: 46,
                           padding: const EdgeInsets.symmetric(horizontal: 8),
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade300,
+                            color: Colors.grey.shade200,
                             border: Border.all(color: Colors.grey.shade400),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton<String>(
                               value: selectedUnits[index],
-                              icon: const Icon(Icons.arrow_drop_down),
+                              icon: const Icon(Icons.arrow_drop_down, color: Colors.black,),
                               isExpanded: true,
                               onChanged: (String? newValue) {
                                 setState(() {
@@ -176,7 +177,7 @@ class _SolarCalculatorScreenState extends State<SolarCalculatorScreen> {
                                   .map<DropdownMenuItem<String>>((unit) {
                                 return DropdownMenuItem<String>(
                                   value: unit,
-                                  child: Text(unit),
+                                  child: Text(unit, style: TextStyle(color: Colors.blue),),
                                 );
                               }).toList(),
                             ),
@@ -212,13 +213,13 @@ class _SolarCalculatorScreenState extends State<SolarCalculatorScreen> {
                    width: 150,
                    child: ElevatedButton(
                      style: ButtonStyle(
-                         backgroundColor: WidgetStatePropertyAll(AppColors.kDarkLighter.withValues(alpha: .23)),
+                         backgroundColor: WidgetStatePropertyAll(Colors.grey.shade200),
                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                              RoundedRectangleBorder(
                                borderRadius: BorderRadius.circular(8.0), // Adjust this value
                              ))),
                      onPressed: resetFields,
-                     child: regularTextWidget(textTitle: 'Reset Fields', textSize: 16, textColor: AppColors.kWhite),
+                     child: regularTextWidget(textTitle: 'Reset Fields', textSize: 16, textColor: AppColors.kBlack),
                    ),
                  ),
                ],
